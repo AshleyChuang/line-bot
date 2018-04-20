@@ -42,8 +42,10 @@ def handle_message(event):
     message = TextSendMessage(text="蛤？你說什麼？我只知道安安的雞雞很小")
     message_pic = ImageSendMessage(
     original_content_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG',
-    preview_image_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG'
-)
+    preview_image_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG')
+    message_vid = VideoSendMessage(
+    original_content_url='https://www.youtube.com/watch?v=eLqgp818bIE4',
+    preview_image_url='https://example.com/preview.jpg')
     #line_bot_api.reply_message(event.reply_token, message)
     line_bot_api.reply_message(event.reply_token, [message,message_pic])
     #line_bot_api.reply_message(event.reply_token,"hahahahahaha")
