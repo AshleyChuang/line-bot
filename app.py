@@ -44,7 +44,7 @@ def handle_message(event):
     original_content_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG',
     preview_image_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG'
 )
-    line_bot_api.reply_message(event.reply_token, message)
+    #line_bot_api.reply_message(event.reply_token, message)
     line_bot_api.reply_message(event.reply_token, message_pic)
     #line_bot_api.reply_message(event.reply_token,"hahahahahaha")
 
