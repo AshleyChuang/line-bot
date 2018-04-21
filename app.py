@@ -92,8 +92,8 @@ def handle_message(event):
     print(movie_pic)
     movie_url = movie_dict[movie_name][2]
     print(movie_url)
-    movie_trailer = get_trailer_url(movie_name)
-    print(movie_trailer)
+    #movie_trailer = get_trailer_url(movie_name)
+    #print(movie_trailer)
     buttons_template = ButtonsTemplate(
         type='buttons', title=movie_name,
         text='Please select!',
