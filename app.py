@@ -90,17 +90,15 @@ def handle_message(event):
     #line_bot_api.reply_message(event.reply_token,"hahahahahaha")print("start chatting!")
     #response = chatbot.get_response(event.meessage.text)
     #message = TextSendMessage(text=response)
-    '''
-    message = TemplateSendMessage(
-        alt_text='Buttons template',
-        template=ButtonsTemplate(
-            thumbnail_image_url='https://github.com/line/line-bot-sdk-python/blob/master/tests/api/test_send_template_message.py',
-            title='movie_name', text='Please select'
+
+    buttons_template = ButtonsTemplate(
+        type='buttons', text='Test',
+        actions=[URITemplateAction(type = 'uri',label='Go to line.me', uri='https://line.me')]
         )
-    )
-    '''
-    buttons_template = ButtonsTemplate(type='buttons', text='Test', actions=[URITemplateAction(type = 'uri',label='Go to line.me', uri='https://line.me')])
-    message = TemplateSendMessage(type = 'template', alt_text='Buttons alt text', template=buttons_template)
+    message = TemplateSendMessage(
+        type = 'template', alt_text='Buttons alt text',
+        template=buttons_template
+        )
     line_bot_api.reply_message(event.reply_token, message)
     #print(response)
 
