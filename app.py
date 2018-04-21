@@ -94,7 +94,7 @@ def handle_message(event):
         type='buttons', title=movie_name,
         text='Please select!',
         thumbnail_image_url = movie_pic,
-        actions=[ PostbackTemplateAction(label='Movie Times', data='movie=%s&action=1'%movie_name), URITemplateAction(type='uri',uri=movie_trailer)]
+        actions=[ PostbackTemplateAction(label='Movie Times', data='movie=%s&action=1'%movie_name), URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
     message = TemplateSendMessage(
