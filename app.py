@@ -87,7 +87,7 @@ def handle_message(event):
     #line_bot_api.reply_message(event.reply_token,"hahahahahaha")print("start chatting!")
     #response = chatbot.get_response(event.meessage.text)
     #message = TextSendMessage(text=response)
-    line_bot_api.reply_message(event.reply_token, message)
+    line_bot_api.reply_message(event.reply_token, [message, message_pic])
     #print(response)
 
 crawl_index_movie()
