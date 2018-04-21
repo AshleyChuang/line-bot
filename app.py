@@ -68,9 +68,10 @@ def callback():
     # handle webhook body
     try:
         handler.handle(body, signature)
-    except InvalidSignatureError:
-        abort(400)
-
+    except linebot.exceptions.LineBotApiError as e:
+        print(e.status_code)
+        print(e.error.message)
+        print(e.error.details)
     return 'OK'
 
 
