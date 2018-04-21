@@ -88,13 +88,13 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="沒有這個電影耶～查查看別的吧！"))
     movie_pic = movie_dict[movie_name][0]
     movie_url = movie_dict[movie_name][2]
-    #movie_trailer = get_trailer_url(movie_name)
+    movie_trailer = get_trailer_url(movie_name)
     #print(movie_trailer)
     buttons_template = ButtonsTemplate(
         type='buttons', title=movie_name,
         text='Please select!',
         thumbnail_image_url = movie_pic,
-        actions=[ PostbackTemplateAction(label='postback', data='movie=%s&action=1'%movie_name)]
+        actions=[ PostbackTemplateAction(label='Movie Times', data='movie=%s&action=1'%movie_name), URITemplateAction(type='uri',uri=movie_trailer)]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
     message = TemplateSendMessage(
