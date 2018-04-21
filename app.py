@@ -40,15 +40,12 @@ def crawl_index_movie():
 
 def search_movie_name(text):
     for movie in movie_dict:
-        print(movie)
         if text in movie:
-            print("!!!!")
             return movie
     return None
 
 def search_movie_picture(movie_name):
     movie_url = 'https://www.vscinemas.com.tw/film/' + movie_dict[movie_name][2]
-    print(movie_url)
     r = requests.get(movie_url)
     content = r.text
     soup = BeautifulSoup(content, 'html.parser')
@@ -83,18 +80,20 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    response = search_movie_name(event.message.text);
-    #movie_pic = search_movie_picture(response)
-    message = TextSendMessage(text=response)
-    #message_pic = ImageSendMessage(
-    #    original_content_url=message_pic,
-    #    preview_image_url=message_pic)
+    movie_name = search_movie_name(event.message.text);
+    movie_pic = search_movie_picture(movie_name)
+    print(movie_name)
+    print(movie_pic)
+    message = TextSendMessage(text=movie_name)
+    message_pic = ImageSendMessage(
+        original_content_url=movie_pic,
+        preview_image_url=movie_pic)
     #line_bot_api.reply_message(event.reply_token, message)
     #line_bot_api.reply_message(event.reply_token, [message,message_pic, message_vid])
     #line_bot_api.reply_message(event.reply_token,"hahahahahaha")print("start chatting!")
     #response = chatbot.get_response(event.meessage.text)
     #message = TextSendMessage(text=response)
-    line_bot_api.reply_message(event.reply_token, [message, message_pic])
+    line_bot_api.reply_message(event.reply_token, [message,message_pic])
     #print(response)
 
 crawl_index_movie()
