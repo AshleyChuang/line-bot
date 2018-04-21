@@ -136,6 +136,7 @@ def get_theater(keyword):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    print("input mode: %d, current_movie: %s"% (input_mode, current_movie))
     if input_mode == 0:
         message = get_movie_by_keyword(event.message.text)
         line_bot_api.reply_message(event.reply_token, message)
