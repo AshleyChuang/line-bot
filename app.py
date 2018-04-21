@@ -85,10 +85,10 @@ def callback():
 def handle_message(event):
     movie_name = search_movie_name(event.message.text)
     movie_pic = movie_dict[movie_name][0]
-    movie_url = movie_dict[movie_name][2]
-    movie_trailer = get_trailer_url(movie_name)
     print(movie_pic)
+    movie_url = movie_dict[movie_name][2]
     print(movie_url)
+    movie_trailer = get_trailer_url(movie_name)
     print(movie_trailer)
     buttons_template = ButtonsTemplate(
         type='buttons', title=movie_name,
@@ -106,9 +106,9 @@ def handle_message(event):
 
 @handler.add(PostbackEvent)
 def handle_message(event):
-    movie_name = re.search('movie=(.+?:)&', event.postback.data)[0]
-    #action_type = event_data[1]
-    print(event.postback.data)
+    movie_name = re.search('movie=(.*)&',event.postback.data).group(1)
+    action_type = re.search('&action=(.*)',event.postback.data).group(1)
+    movie_url = movie_dict[movie_name][2]
     ## action: 1->場次
     line_bot_api.reply_message(event.reply_token,TextSendMessage(text=movie_name))
 
