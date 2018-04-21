@@ -46,7 +46,13 @@ def search_movie_name(text):
             return movie
     return None
 
-
+def get_trailer_url(movie_name):
+    url = movie_dict[movie_name][2]
+    r = requests.get(url)
+    content = r.text
+    soup = BeautifulSoup(content, 'html.parser')
+    movieVideo = soup.find(class_='mainVideo').find('iframe', src=True)['src']
+    print(movieVideo)
 ############
 app = Flask(__name__)
 
@@ -76,11 +82,13 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    movie_name = search_movie_name(event.message.text);
+    movie_name = search_movie_name(event.message.text)
     movie_pic = movie_dict[movie_name][0]
     movie_url = movie_dict[movie_name][2]
+    movie_trailer = get_trailer_url(movie_name)
     print(movie_pic)
     print(movie_url)
+    print(movie_trailer)
     #message = TextSendMessage(text=movie_name)
     #message_pic = ImageSendMessage(
     #    original_content_url=movie_pic,
@@ -94,8 +102,9 @@ def handle_message(event):
     buttons_template = ButtonsTemplate(
         type='buttons', title=movie_name,
         text='Please select!',
-        thumbnail_image_url = movie_pic, imageSize = 'contain', image_aspect_ratio = 'square',
-        actions=[URITemplateAction(type = 'uri',label='Link to Viewshow', uri=movie_url)]
+        thumbnail_image_url = movie_pic, image_size = 'contain',
+        actions=[URITemplateAction(type = 'uri',label='Link to Viewshow', uri=movie_url)
+        ,URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)]
         )
     message = TemplateSendMessage(
         type = 'template', alt_text='Buttons alt text',
