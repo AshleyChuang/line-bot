@@ -83,6 +83,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    print(len(movie_dict))
     movie_name = search_movie_name(event.message.text)
     if movie_name is None:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="沒有這個電影耶～查查看別的吧！"))
@@ -96,6 +97,7 @@ def handle_message(event):
     buttons_template = ButtonsTemplate(
         type='buttons', title=movie_name,
         text='Please select!',
+        thumbnail_image_url = movie_pic,
         actions=[ PostbackTemplateAction(label='postback', data='movie=%s&action=1'%movie_name)]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
