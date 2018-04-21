@@ -33,9 +33,9 @@ def crawl_index_movie():
         movieList = soup.find(class_='movieList').find_all('li')
         for m in movieList:
             movie_name = "%s (%s)" % (m.find('h2').text, m.find('h3').text)
-            movie_info_url = vieshow_url + 'film/' + m.find('h2').find('a')['href']
-            movie_start_time = m.find('time').text
             movie_img = m.find('img')['src'].replace('../', vieshow_url)
+            movie_info_url = vieshow_url + 'film/' + m.find('a')['href']
+            movie_start_time = m.find('time').text
             info = [movie_img,movie_start_time, movie_info_url]
             movie_dict[movie_name] = info
         next_page_url = index_url + p['href']
@@ -84,6 +84,9 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     movie_name = search_movie_name(event.message.text)
+    if movie_name is None:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage=(text="沒有這個電影耶～查查看別的吧！"))
+    print(movie_dict[movie_name])
     movie_pic = movie_dict[movie_name][0]
     print(movie_pic)
     movie_url = movie_dict[movie_name][2]
