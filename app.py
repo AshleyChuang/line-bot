@@ -7,7 +7,7 @@ vieshow_url = 'https://www.vscinemas.com.tw/'
 hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
 index_url = 'https://www.vscinemas.com.tw/film/index.aspx'
 coming_url = 'https://www.vscinemas.com.tw/film/coming.aspx'
-movie_dict = {}
+movie_dict = {} # movie info: 0->image, 1->start time, 2->detail_url, 3->{theaterList: movie time #}
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -28,15 +28,15 @@ def crawl_index_movie():
     content = r.text
     soup = BeautifulSoup(content, 'html.parser')
     moviePage = soup.find(class_='pagebar').find_all('a', href=True)
-
+    movie_dict.clear();
     for p in moviePage[1:]:
         movieList = soup.find(class_='movieList').find_all('li')
         for m in movieList:
-            movie_name = m.find('h2').text
-            movie_img = m.find('img')['src'].replace('../', vieshow_url)
-            movie_info_url = vieshow_url + 'film/' + m.find('a')['href']
+            movie_name = "%s (%s)" % (m.find('h2').text, m.find('h3').text)
+            movie_info_url = vieshow_url + 'film/' + m.find('h2').find('a')['href']
             movie_start_time = m.find('time').text
-            info = [movie_img,movie_start_time, movie_info_url]
+            movie_img = m.find('img')['src'].replace('../', vieshow_url)
+            info = [movie_img,movie_start_time, movie_info_url, {}]
             movie_dict[movie_name] = info
         next_page_url = index_url + p['href']
         soup = BeautifulSoup(requests.get(next_page_url).text, 'html.parser')
@@ -52,8 +52,26 @@ def get_trailer_url(movie_name):
     r = requests.get(url)
     content = r.text
     soup = BeautifulSoup(content, 'html.parser')
-    movieVideo = soup.find(class_='mainVideo').find('iframe')['src']
-    return movieVideo
+    movieVideo = soup.find(class_='mainVideo')
+    if movieVideo is None:
+        return None
+    return movieVideo.find('iframe')['src']
+
+def crawl_theater(movie_name):
+    url = movie_dict[movie_name][2]
+    if len(movie_dict[movie_name][3]) != 0:
+        return None
+    movie_theater = {}
+    r = requests.get(url)
+    content = r.text
+    soup = BeautifulSoup(content, 'html.parser')
+    theaterList = soup.find("ul", {"class": "versionList"}).find("li").find_all("li")
+    for i in theaterList:
+        t = i.find('a')
+        movie_theater[t.text] = t['href']
+    movie_dict[movie_name][3] = movie_theater
+    print(movie_dict[movie_name][3])
+
 ############
 app = Flask(__name__)
 
@@ -90,11 +108,15 @@ def handle_message(event):
     movie_url = movie_dict[movie_name][2]
     movie_trailer = get_trailer_url(movie_name)
     #print(movie_trailer)
+    if movie_trailer is None:
+        uri_template = URITemplateAction(type = 'uri',label='Picture', uri=movie_pic)
+    else:
+        uri_template = URITemplateAction(type = 'uri',label='Trailer', uri=movie_trailer)
     buttons_template = ButtonsTemplate(
         type='buttons', title=movie_name[0:40],
         text='Please select!',
         thumbnail_image_url = movie_pic,
-        actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1'%movie_name),URITemplateAction(type = 'uri',label='Trailer', uri=movie_trailer)]
+        actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1'%movie_name),uri_template]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
         #PostbackTemplateAction(label='Movie Times', data='movie=%s&action=1'%movie_name),
