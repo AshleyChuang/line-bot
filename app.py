@@ -31,9 +31,7 @@ def crawl_index_movie():
             movie_info_url = m.find('h2').find('a')['href']
             movie_start_time = m.find('time').text
             movie_img = m.find('img')['src'].replace('../', vieshow_url)
-            print(movie_img)
-            hot_movie = False
-            info = [movie_name, movie_start_time, movie_info_url, hot_movie, []]
+            info = [movie_img,movie_start_time, movie_info_url]
             movie_dict[movie_name] = info
         next_page_url = index_url + p['href']
         soup = BeautifulSoup(requests.get(next_page_url).text, 'html.parser')
@@ -45,10 +43,8 @@ def search_movie_name(text):
     return None
 
 def search_movie_picture(movie_name):
-    movie_url = 'https://www.vscinemas.com.tw/film/' + movie_dict[movie_name][2]
-    r = requests.get(movie_url)
-    content = r.text
-    soup = BeautifulSoup(content, 'html.parser')
+    return movie_dict[movie_name][0]
+
 
 
 ############
@@ -82,8 +78,6 @@ def callback():
 def handle_message(event):
     movie_name = search_movie_name(event.message.text);
     movie_pic = search_movie_picture(movie_name)
-    print(movie_name)
-    print(movie_pic)
     message = TextSendMessage(text=movie_name)
     message_pic = ImageSendMessage(
         original_content_url=movie_pic,
