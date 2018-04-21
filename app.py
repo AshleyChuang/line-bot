@@ -89,28 +89,24 @@ def handle_message(event):
     #response = chatbot.get_response(event.meessage.text)
     #message = TextSendMessage(text=response)
     message = TemplateSendMessage(
-    alt_text='Buttons template',
-    template=ButtonsTemplate(
-        thumbnail_image_url=movie_pic,
-        title=movie_name,
-        text='Please select',
-        actions=[
-            PostbackTemplateAction(
-                label='postback',
-                text='postback text',
-                data='action=buy&itemid=1'
-            ),
-            MessageTemplateAction(
-                label='message',
-                text='message text'
-            ),
-            URITemplateAction(
-                label='uri',
-                uri=movie_url
-            )
-        ]
+        alt_text='Buttons template',
+        template=ButtonsTemplate(
+            thumbnail_image_url=movie_pic,
+            title=movie_name, text='Please select',
+            actions=[
+                PostbackTemplateAction(
+                    label='postback', text='postback text',
+                    data='action=buy&itemid=1'
+                ),
+                MessageTemplateAction(
+                    label='message', text='message text'
+                ),
+                URITemplateAction(
+                    label='uri', uri=movie_url
+                )
+            ]
+        )
     )
-)
     line_bot_api.reply_message(event.reply_token, message)
     #print(response)
 
