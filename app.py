@@ -40,7 +40,9 @@ def crawl_index_movie():
 
 def search_movie_name(text):
     for movie in movie_dict:
+        print(movie)
         if text in movie:
+            print("!!!!")
             return movie
     return None
 
@@ -82,11 +84,11 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     response = search_movie_name(event.message.text);
-    movie_pic = search_movie_picture(response)
+    #movie_pic = search_movie_picture(response)
     message = TextSendMessage(text=response)
-    message_pic = ImageSendMessage(
-        original_content_url=message_pic,
-        preview_image_url=message_pic)
+    #message_pic = ImageSendMessage(
+    #    original_content_url=message_pic,
+    #    preview_image_url=message_pic)
     #line_bot_api.reply_message(event.reply_token, message)
     #line_bot_api.reply_message(event.reply_token, [message,message_pic, message_vid])
     #line_bot_api.reply_message(event.reply_token,"hahahahahaha")print("start chatting!")
