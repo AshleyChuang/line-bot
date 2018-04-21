@@ -6,7 +6,7 @@ vieshow_url = 'https://www.vscinemas.com.tw/'
 hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
 index_url = 'https://www.vscinemas.com.tw/film/index.aspx'
 coming_url = 'https://www.vscinemas.com.tw/film/coming.aspx'
-
+movie_dict = {}
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -17,9 +17,8 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageSendMessage
 )
-
-def crawl_index_movie(text):
-    #fout = open('index_movie.txt', 'w')
+############
+def crawl_index_movie():
     r = requests.get(index_url)
     content = r.text
     soup = BeautifulSoup(content, 'html.parser')
@@ -28,21 +27,32 @@ def crawl_index_movie(text):
     for p in moviePage[1:]:
         movieList = soup.find(class_='movieList').find_all('li')
         for m in movieList:
-            movie_name_cn = m.find('h2').text
-            if text in movie_name_cn:
-                return movie_name_cn
-            movie_name_en = m.find('h3').text
-            if text in movie_name_en:
-                return movie_name_en
+            movie_name = "%s (%s)" % (m.find('h2').text, m.find('h3').text)
             movie_info_url = m.find('h2').find('a')['href']
             movie_start_time = m.find('time').text
-            #fout.write("%s,%s,%s,%s\n" % ( movie_name_cn, movie_name_en, movie_start_time, movie_info_url))
-            print("%s,%s,%s,%s" % ( movie_name_cn, movie_name_en, movie_start_time, movie_info_url))
+            movie_img = m.find('img')['src'].replace('../', vieshow_url)
+            print(movie_img)
+            hot_movie = False
+            info = [movie_name, movie_start_time, movie_info_url, hot_movie, []]
+            movie_dict[movie_name] = info
         next_page_url = index_url + p['href']
-        #print(next_page_url)
         soup = BeautifulSoup(requests.get(next_page_url).text, 'html.parser')
-    #fout.close()
+
+def search_movie_name(text):
+    for movie in movie_dict:
+        if text in movie:
+            return movie
     return None
+
+def search_movie_picture(movie_name):
+    movie_url = 'https://www.vscinemas.com.tw/film/' + movie_dict[movie_name][2]
+    print(movie_url)
+    r = requests.get(movie_url)
+    content = r.text
+    soup = BeautifulSoup(content, 'html.parser')
+
+
+############
 app = Flask(__name__)
 
 # Channel Access Token
@@ -71,18 +81,18 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    response = crawl_index_movie(event.message.text);
+    response = search_movie_name(event.message.text);
+    movie_pic = search_movie_picture(response)
     message = TextSendMessage(text=response)
-    #message = TextSendMessage(text="蛤？你說什麼？我只知道安安的雞雞很小")
-    #message_pic = ImageSendMessage(
-    #    original_content_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG',
-    #    preview_image_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG')
+    message_pic = ImageSendMessage(
+        original_content_url=message_pic,
+        preview_image_url=message_pic)
     #line_bot_api.reply_message(event.reply_token, message)
     #line_bot_api.reply_message(event.reply_token, [message,message_pic, message_vid])
     #line_bot_api.reply_message(event.reply_token,"hahahahahaha")print("start chatting!")
     #response = chatbot.get_response(event.meessage.text)
     #message = TextSendMessage(text=response)
-    line_bot_api.reply_message(event.reply_token, message)
+    line_bot_api.reply_message(event.reply_token, [message, message_pic])
     #print(response)
 
 
@@ -90,3 +100,4 @@ import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+    crawl_index_movie()
