@@ -103,7 +103,7 @@ def handle_message(event):
         type='buttons', title=movie_name,
         text='Please select!',
         thumbnail_image_url = movie_pic, image_size = 'contain',
-        actions=[ PostbackTemplateAction(label='postback', text='postback text',data='action=buy&itemid=1')]
+        actions=[ PostbackTemplateAction(label='postback', text='真愛',data='action=buy&itemid=1')]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
     message = TemplateSendMessage(
