@@ -79,7 +79,7 @@ def handle_message(event):
     movie_name = search_movie_name(event.message.text);
     movie_pic = movie_dict[movie_name][0]
     movie_url = movie_dict[movie_name][2]
-    message = TextSendMessage(text=movie_name)
+    #message = TextSendMessage(text=movie_name)
     #message_pic = ImageSendMessage(
     #    original_content_url=movie_pic,
     #    preview_image_url=movie_pic)
@@ -88,7 +88,7 @@ def handle_message(event):
     #line_bot_api.reply_message(event.reply_token,"hahahahahaha")print("start chatting!")
     #response = chatbot.get_response(event.meessage.text)
     #message = TextSendMessage(text=response)
-    '''
+
     message = TemplateSendMessage(
         alt_text='Buttons template',
         template=ButtonsTemplate(
@@ -108,7 +108,7 @@ def handle_message(event):
             ]
         )
     )
-    '''
+
     line_bot_api.reply_message(event.reply_token, message)
     #print(response)
 
