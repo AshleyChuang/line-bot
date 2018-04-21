@@ -33,7 +33,7 @@ def crawl_index_movie():
         for m in movieList:
             movie_name = "%s (%s)" % (m.find('h2').text, m.find('h3').text)
             movie_info_url = m.find('h2').find('a')['href']
-            movie_start_time = m.find('time').text
+            movie_start_time = vieshow_url + 'film/' + m.find('time').text
             movie_img = m.find('img')['src'].replace('../', vieshow_url)
             info = [movie_img,movie_start_time, movie_info_url]
             movie_dict[movie_name] = info
