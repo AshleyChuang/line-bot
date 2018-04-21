@@ -106,7 +106,7 @@ def handle_message(event):
 
 @handler.add(PostbackEvent)
 def handle_message(event):
-    movie_name = re.search('movie=(.+?)&', event.postback.data)[0]
+    movie_name = re.search('movie=(.+?:)&', event.postback.data)[0]
     #action_type = event_data[1]
     print(event.postback.data)
     ## action: 1->場次
