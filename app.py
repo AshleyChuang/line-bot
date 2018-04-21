@@ -94,6 +94,7 @@ def handle_message(event):
     buttons_template = ButtonsTemplate(
         type='buttons', title=movie_name,
         text='Please select!',
+        thumbnailImageUrl = movie_pic,
         actions=[URITemplateAction(type = 'uri',label='Link to Viewshow', uri=movie_url)]
         )
     message = TemplateSendMessage(
