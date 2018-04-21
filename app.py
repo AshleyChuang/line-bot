@@ -9,6 +9,7 @@ index_url = 'https://www.vscinemas.com.tw/film/index.aspx'
 coming_url = 'https://www.vscinemas.com.tw/film/coming.aspx'
 movie_dict = {} # movie info: 0->image, 1->start time, 2->detail_url, 3->{theaterList: movie time #}
 input_mode = 0 # 0->searching movie by name, 1->input desired movie theater
+current_movie = '' # desired movie's name
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -125,11 +126,21 @@ def get_movie_by_keyword(keyword):
         )
     return message
 
+def get_theater(keyword):
+    theaters = movie_dict[current_movie][3].keys()
+    for i in theaters:
+        if keyword is in i:
+            message = TextSendMessage(text=i)
+            return message
+    return TextSendMessage(text=next(iter(theaters)))
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     if input_mode == 0:
         message = get_movie_by_keyword(event.message.text)
         line_bot_api.reply_message(event.reply_token, message)
+    elif input_mode == 1:
+        message = get_theater(event.message.text)
     #print(response)
 
 @handler.add(PostbackEvent)
@@ -140,11 +151,18 @@ def handle_message(event):
     ## action: 1->場次
     #if action_type == '1':
     crawl_theater(movie_name)
-    text = ['這個電影在這些影城都有喔～想要在哪一個影城看呀？\n']
-    for i in movie_dict[movie_name][3]:
-        text.append(i+'\n')
-    text = ''.join(text)
-    line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
+    if len(movie_dict[movie_name][3]) == 1:
+        # confirm template
+        text = '這場電影只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？'
+        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
+    else:
+        text = ['這個電影在這些影城都有喔～想要在哪一個影城看呀？\n']
+        for i in movie_dict[movie_name][3]:
+            text.append('・'+i+'\n')
+        text = ''.join(text)
+        input_mode = 1
+        current_movie = movie_name
+        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
 
 crawl_index_movie()
 import os
