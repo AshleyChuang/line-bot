@@ -93,7 +93,7 @@ def handle_message(event):
         type='buttons', title=movie_name,
         text='Please select!',
         thumbnail_image_url = movie_pic, image_size = 'contain',
-        actions=[ PostbackTemplateAction(label='postback', data='action=buy&itemid=1')]
+        actions=[ PostbackTemplateAction(label='postback', data='movie=%s&action=1'%movie_name)]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
     message = TemplateSendMessage(
@@ -106,7 +106,8 @@ def handle_message(event):
 @handler.add(PostbackEvent)
 def handle_message(event):
     print(event.postback.data)
-    line_bot_api.reply_message(event.reply_token,TextSendMessage(text='Hello, world'))
+    ## action: 1->場次
+    line_bot_api.reply_message(event.reply_token,TextSendMessage(text=event.postback.data))
 
 crawl_index_movie()
 import os
