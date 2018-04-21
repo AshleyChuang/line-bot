@@ -97,9 +97,8 @@ def handle_message(event):
     line_bot_api.reply_message(event.reply_token, [message, message_pic])
     #print(response)
 
-
+crawl_index_movie()
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
-    crawl_index_movie()
     app.run(host='0.0.0.0', port=port)
