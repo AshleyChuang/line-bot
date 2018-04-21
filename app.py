@@ -91,10 +91,10 @@ def handle_message(event):
     movie_trailer = get_trailer_url(movie_name)
     #print(movie_trailer)
     buttons_template = ButtonsTemplate(
-        type='buttons', title=movie_name,
+        type='buttons', title=movie_name[0:40],
         text='Please select!',
         thumbnail_image_url = movie_pic,
-        actions=[PostbackTemplateAction(label='Movie Times', data='movie=%s&action=1'%movie_name),URITemplateAction(type = 'uri',label='Trailer', uri=movie_trailer)]
+        actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1'%movie_name),URITemplateAction(type = 'uri',label='Trailer', uri=movie_trailer)]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
         #PostbackTemplateAction(label='Movie Times', data='movie=%s&action=1'%movie_name),
@@ -111,6 +111,7 @@ def handle_message(event):
     action_type = re.search('&action=(.*)',event.postback.data).group(1)
     movie_url = movie_dict[movie_name][2]
     ## action: 1->場次
+
     line_bot_api.reply_message(event.reply_token,TextSendMessage(text=movie_name))
 
 crawl_index_movie()
