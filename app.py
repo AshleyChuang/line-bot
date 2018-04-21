@@ -129,7 +129,7 @@ def get_movie_by_keyword(keyword):
 def get_theater(keyword):
     theaters = movie_dict[current_movie][3].keys()
     for i in theaters:
-        if keyword is in i:
+        if keyword in i:
             message = TextSendMessage(text=i)
             return message
     return TextSendMessage(text=next(iter(theaters)))
