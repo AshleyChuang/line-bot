@@ -79,6 +79,8 @@ def handle_message(event):
     movie_name = search_movie_name(event.message.text);
     movie_pic = movie_dict[movie_name][0]
     movie_url = movie_dict[movie_name][2]
+    print(movie_pic)
+    print(movie_url)
     #message = TextSendMessage(text=movie_name)
     #message_pic = ImageSendMessage(
     #    original_content_url=movie_pic,
