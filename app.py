@@ -133,7 +133,13 @@ def handle_message(event):
     action_type = re.search('&action=(.*)',event.postback.data).group(1)
     movie_url = movie_dict[movie_name][2]
     ## action: 1->場次
-
+    #if action_type == '1':
+    crawl_theater(movie_name)
+    text = ['這個電影在這些影城都有喔～想要在哪一個影城看呀？\n']
+    for i in movie_dict[movie_name][3]:
+        text.append(i+'\n')
+    text.join(text)
+    print(text)
     line_bot_api.reply_message(event.reply_token,TextSendMessage(text=movie_name))
 
 crawl_index_movie()
