@@ -1,6 +1,6 @@
 from flask import Flask, request, abort
-from chatterbot import ChatBot
-import sys
+#from chatterbot import ChatBot
+#import sys
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -12,7 +12,7 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageSendMessage
 )
 
-
+'''
 # 建立一個 ChatBot 物件
 chatbot = ChatBot(
     'Ron Obvious',
@@ -22,7 +22,7 @@ chatbot = ChatBot(
 # 基於英文的自動學習套件
 chatbot.train("chatterbot.corpus.english")
 
-
+'''
 app = Flask(__name__)
 
 # Channel Access Token
@@ -51,7 +51,7 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    #message = TextSendMessage(text=event.message.text)
+    message = TextSendMessage(text=event.message.text)
     #message = TextSendMessage(text="蛤？你說什麼？我只知道安安的雞雞很小")
     #message_pic = ImageSendMessage(
     #    original_content_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG',
@@ -59,12 +59,10 @@ def handle_message(event):
     #line_bot_api.reply_message(event.reply_token, message)
     #line_bot_api.reply_message(event.reply_token, [message,message_pic, message_vid])
     #line_bot_api.reply_message(event.reply_token,"hahahahahaha")print("start chatting!")
-
-
-    response = chatbot.get_response(event.meessage.text)
-    message = TextSendMessage(text=response)
+    #response = chatbot.get_response(event.meessage.text)
+    #message = TextSendMessage(text=response)
     line_bot_api.reply_message(event.reply_token, message)
-    print(response)
+    #print(response)
 
 
 import os
