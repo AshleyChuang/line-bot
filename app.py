@@ -92,9 +92,10 @@ def handle_message(event):
     #message = TextSendMessage(text=response)
 
     buttons_template = ButtonsTemplate(
-        type='buttons', text=movie_name,
-        thumbnailImageUrl=movie_pic,
-        actions=[URITemplateAction(type = 'uri',label='For more info of the movie!', uri=movie_url)]
+        type='buttons', title=movie_name,
+        text='Please select!'
+        thumbnail_image_url=movie_pic,
+        actions=[URITemplateAction(type = 'uri',label='Link to Viewshow', uri=movie_url)]
         )
     message = TemplateSendMessage(
         type = 'template', alt_text='Buttons alt text',
