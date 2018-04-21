@@ -8,6 +8,7 @@ hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
 index_url = 'https://www.vscinemas.com.tw/film/index.aspx'
 coming_url = 'https://www.vscinemas.com.tw/film/coming.aspx'
 movie_dict = {} # movie info: 0->image, 1->start time, 2->detail_url, 3->{theaterList: movie time #}
+input_mode = 0 # 0->searching movie by name, 1->input desired movie theater
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -98,12 +99,10 @@ def callback():
 
     return 'OK'
 
-
-@handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-    movie_name = search_movie_name(event.message.text)
+def get_movie_by_keyword(keyword):
+    movie_name = search_movie_name(keyword)
     if movie_name is None:
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="沒有這個電影耶～查查看別的吧！"))
+        return TextSendMessage(text="沒有這個電影耶～查查看別的吧！")
     movie_pic = movie_dict[movie_name][0]
     movie_url = movie_dict[movie_name][2]
     movie_trailer = get_trailer_url(movie_name)
@@ -124,7 +123,13 @@ def handle_message(event):
         type = 'template', alt_text='Buttons alt text',
         template=buttons_template
         )
-    line_bot_api.reply_message(event.reply_token, message)
+    return message
+
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    if input_mode == 0:
+        message = get_movie_by_keyword(event.message.text)
+        line_bot_api.reply_message(event.reply_token, message)
     #print(response)
 
 @handler.add(PostbackEvent)
