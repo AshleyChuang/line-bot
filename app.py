@@ -10,6 +10,19 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageSendMessage
 )
 
+from chatterbot import ChatBot
+import sys
+
+# 建立一個 ChatBot 物件
+chatbot = ChatBot(
+    'Ron Obvious',
+    trainer = 'chatterbot.trainers.ChatterBotCorpusTrainer'
+)
+
+# 基於英文的自動學習套件
+chatbot.train("chatterbot.corpus.english")
+
+
 app = Flask(__name__)
 
 # Channel Access Token
@@ -39,16 +52,20 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     #message = TextSendMessage(text=event.message.text)
-    message = TextSendMessage(text="蛤？你說什麼？我只知道安安的雞雞很小")
-    message_pic = ImageSendMessage(
-    original_content_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG',
-    preview_image_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG')
-    message_vid = VideoSendMessage(
-    original_content_url='https://www.youtube.com/watch?v=eLqgp818bIE4',
-    preview_image_url='https://example.com/preview.jpg')
+    #message = TextSendMessage(text="蛤？你說什麼？我只知道安安的雞雞很小")
+    #message_pic = ImageSendMessage(
+    #    original_content_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG',
+    #    preview_image_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG')
     #line_bot_api.reply_message(event.reply_token, message)
-    line_bot_api.reply_message(event.reply_token, [message,message_pic])
-    #line_bot_api.reply_message(event.reply_token,"hahahahahaha")
+    #line_bot_api.reply_message(event.reply_token, [message,message_pic, message_vid])
+    #line_bot_api.reply_message(event.reply_token,"hahahahahaha")print("start chatting!")
+
+
+    response = chatbot.get_response(event.meessage.text)
+    message = TextSendMessage(text=response)
+    line_bot_api.reply_message(event.reply_token, message)
+    print(response)
+
 
 import os
 if __name__ == "__main__":
