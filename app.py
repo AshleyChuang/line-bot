@@ -32,7 +32,7 @@ def crawl_index_movie():
     for p in moviePage[1:]:
         movieList = soup.find(class_='movieList').find_all('li')
         for m in movieList:
-            movie_name = "%s (%s)" % (m.find('h2').text, m.find('h3').text)
+            movie_name = m.find('h2').text
             movie_img = m.find('img')['src'].replace('../', vieshow_url)
             movie_info_url = vieshow_url + 'film/' + m.find('a')['href']
             movie_start_time = m.find('time').text
@@ -83,22 +83,18 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print(len(movie_dict))
     movie_name = search_movie_name(event.message.text)
     if movie_name is None:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="沒有這個電影耶～查查看別的吧！"))
-    print(movie_dict[movie_name])
     movie_pic = movie_dict[movie_name][0]
-    print(movie_pic)
     movie_url = movie_dict[movie_name][2]
-    print(movie_url)
     #movie_trailer = get_trailer_url(movie_name)
     #print(movie_trailer)
     buttons_template = ButtonsTemplate(
-        type='buttons', title="hi",
+        type='buttons', title=movie_name,
         text='Please select!',
-        thumbnail_image_url = 'https://www.vscinemas.com.tw/upload/film/film_20180313024.jpg',
-        actions=[ PostbackTemplateAction(label='postback', data='movie=%s&action=1'%"hi")]
+        thumbnail_image_url = movie_pic,
+        actions=[ PostbackTemplateAction(label='postback', data='movie=%s&action=1'%movie_name)]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
     message = TemplateSendMessage(
