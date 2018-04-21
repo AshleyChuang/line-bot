@@ -15,7 +15,11 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage, ImageSendMessage
+    TemplateSendMessage, ButtonsTemplate,
+    PostbackTemplateAction, MessageTemplateAction,
+    URITemplateAction, DatetimePickerTemplateAction,
+    ConfirmTemplate, CarouselTemplate, CarouselColumn,
+    ImageCarouselTemplate, ImageCarouselColumn
 )
 ############
 def crawl_index_movie():
@@ -41,10 +45,6 @@ def search_movie_name(text):
         if text in movie:
             return movie
     return None
-
-def search_movie_picture(movie_name):
-    return movie_dict[movie_name][0]
-
 
 
 ############
@@ -77,17 +77,41 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     movie_name = search_movie_name(event.message.text);
-    movie_pic = search_movie_picture(movie_name)
-    message = TextSendMessage(text=movie_name)
-    message_pic = ImageSendMessage(
-        original_content_url=movie_pic,
-        preview_image_url=movie_pic)
+    movie_pic = movie_dict[movie_name][0]
+    movie_url = movie_dict[movie_name][2]
+    #message = TextSendMessage(text=movie_name)
+    #message_pic = ImageSendMessage(
+    #    original_content_url=movie_pic,
+    #    preview_image_url=movie_pic)
     #line_bot_api.reply_message(event.reply_token, message)
     #line_bot_api.reply_message(event.reply_token, [message,message_pic, message_vid])
     #line_bot_api.reply_message(event.reply_token,"hahahahahaha")print("start chatting!")
     #response = chatbot.get_response(event.meessage.text)
     #message = TextSendMessage(text=response)
-    line_bot_api.reply_message(event.reply_token, [message, message_pic])
+    message = TemplateSendMessage(
+    alt_text='Buttons template',
+    template=ButtonsTemplate(
+        thumbnail_image_url=movie_pic,
+        title=movie_name,
+        text='Please select',
+        actions=[
+            PostbackTemplateAction(
+                label='postback',
+                text='postback text',
+                data='action=buy&itemid=1'
+            ),
+            MessageTemplateAction(
+                label='message',
+                text='message text'
+            ),
+            URITemplateAction(
+                label='uri',
+                uri=movie_url
+            )
+        ]
+    )
+)
+    line_bot_api.reply_message(event.reply_token, message)
     #print(response)
 
 crawl_index_movie()
