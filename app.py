@@ -1,4 +1,6 @@
 from flask import Flask, request, abort
+from chatterbot import ChatBot
+import sys
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -10,8 +12,6 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageSendMessage
 )
 
-from chatterbot import ChatBot
-import sys
 
 # 建立一個 ChatBot 物件
 chatbot = ChatBot(
