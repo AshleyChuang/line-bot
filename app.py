@@ -101,12 +101,11 @@ def handle_message(event):
         actions=[ PostbackTemplateAction(label='postback', data='movie=%s&action=1'%movie_name)]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
-    '''
     message = TemplateSendMessage(
         type = 'template', alt_text='Buttons alt text',
         template=buttons_template
         )
-    '''
+    
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text="testest123"))
     #print(response)
 
