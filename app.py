@@ -1,6 +1,12 @@
 from flask import Flask, request, abort
-#from chatterbot import ChatBot
-#import sys
+import requests
+from bs4 import BeautifulSoup
+
+vieshow_url = 'https://www.vscinemas.com.tw/'
+hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
+index_url = 'https://www.vscinemas.com.tw/film/index.aspx'
+coming_url = 'https://www.vscinemas.com.tw/film/coming.aspx'
+
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -12,17 +18,31 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageSendMessage
 )
 
-'''
-# 建立一個 ChatBot 物件
-chatbot = ChatBot(
-    'Ron Obvious',
-    trainer = 'chatterbot.trainers.ChatterBotCorpusTrainer'
-)
+def crawl_index_movie(text):
+    #fout = open('index_movie.txt', 'w')
+    r = requests.get(index_url)
+    content = r.text
+    soup = BeautifulSoup(content, 'html.parser')
+    moviePage = soup.find(class_='pagebar').find_all('a', href=True)
 
-# 基於英文的自動學習套件
-chatbot.train("chatterbot.corpus.english")
-
-'''
+    for p in moviePage[1:]:
+        movieList = soup.find(class_='movieList').find_all('li')
+        for m in movieList:
+            movie_name_cn = m.find('h2').text
+            if text in movie_name_cn:
+                return movie_name_cn
+            movie_name_en = m.find('h3').text
+            if text in movie_name_en:
+                return movie_name_en
+            movie_info_url = m.find('h2').find('a')['href']
+            movie_start_time = m.find('time').text
+            #fout.write("%s,%s,%s,%s\n" % ( movie_name_cn, movie_name_en, movie_start_time, movie_info_url))
+            print("%s,%s,%s,%s" % ( movie_name_cn, movie_name_en, movie_start_time, movie_info_url))
+        next_page_url = index_url + p['href']
+        #print(next_page_url)
+        soup = BeautifulSoup(requests.get(next_page_url).text, 'html.parser')
+    #fout.close()
+    return None
 app = Flask(__name__)
 
 # Channel Access Token
@@ -51,7 +71,8 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    message = TextSendMessage(text=event.message.text)
+    response = crawl_index_movie(event.message.text);
+    message = TextSendMessage(text=response)
     #message = TextSendMessage(text="蛤？你說什麼？我只知道安安的雞雞很小")
     #message_pic = ImageSendMessage(
     #    original_content_url='https://www.vscinemas.com.tw/upload/film/film_20180416001.JPG',
