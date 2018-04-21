@@ -1,6 +1,7 @@
 from flask import Flask, request, abort
 import requests
 from bs4 import BeautifulSoup
+import re
 
 vieshow_url = 'https://www.vscinemas.com.tw/'
 hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
@@ -105,12 +106,11 @@ def handle_message(event):
 
 @handler.add(PostbackEvent)
 def handle_message(event):
-    event_data = event.postback.data.split("&")
-    movie_name = event_data[0]
-    action_type = event_data[1]
+    movie_name = re.search('movie=(.+?)&', event.postback.data)[0]
+    #action_type = event_data[1]
     print(event.postback.data)
     ## action: 1->場次
-    line_bot_api.reply_message(event.reply_token,TextSendMessage(text=movie_name+action_type))
+    line_bot_api.reply_message(event.reply_token,TextSendMessage(text=movie_name))
 
 crawl_index_movie()
 import os
