@@ -139,8 +139,7 @@ def handle_message(event):
     for i in movie_dict[movie_name][3]:
         text.append(i+'\n')
     text = ''.join(text)
-    print(text)
-    line_bot_api.reply_message(event.reply_token,TextSendMessage(text=movie_name))
+    line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
 
 crawl_index_movie()
 import os
