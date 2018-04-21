@@ -105,8 +105,7 @@ def handle_message(event):
         type = 'template', alt_text='Buttons alt text',
         template=buttons_template
         )
-    
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="testest123"))
+    line_bot_api.reply_message(event.reply_token, message)
     #print(response)
 
 @handler.add(PostbackEvent)
