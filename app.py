@@ -85,7 +85,7 @@ def callback():
 def handle_message(event):
     movie_name = search_movie_name(event.message.text)
     if movie_name is None:
-        line_bot_api.reply_message(event.reply_token, TextSendMessage=(text="沒有這個電影耶～查查看別的吧！"))
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="沒有這個電影耶～查查看別的吧！"))
     print(movie_dict[movie_name])
     movie_pic = movie_dict[movie_name][0]
     print(movie_pic)
