@@ -138,7 +138,7 @@ def handle_message(event):
     text = ['這個電影在這些影城都有喔～想要在哪一個影城看呀？\n']
     for i in movie_dict[movie_name][3]:
         text.append(i+'\n')
-    text.join(text)
+    text = ''.join(text)
     print(text)
     line_bot_api.reply_message(event.reply_token,TextSendMessage(text=movie_name))
 
