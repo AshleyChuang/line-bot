@@ -15,7 +15,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent,TextMessage, TextSendMessage,TemplateSendMessage, ButtonsTemplate,
+    MessageEvent, PostbackEvent, TextMessage, TextSendMessage,TemplateSendMessage, ButtonsTemplate,
     PostbackTemplateAction, MessageTemplateAction,
     URITemplateAction, DatetimePickerTemplateAction,
     ConfirmTemplate, CarouselTemplate, CarouselColumn,
@@ -69,7 +69,7 @@ def callback():
 
     # get request body as text
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+    #app.logger.info("Request body: " + body)
 
     # handle webhook body
     try:
@@ -89,21 +89,11 @@ def handle_message(event):
     print(movie_pic)
     print(movie_url)
     print(movie_trailer)
-    #message = TextSendMessage(text=movie_name)
-    #message_pic = ImageSendMessage(
-    #    original_content_url=movie_pic,
-    #    preview_image_url=movie_pic)
-    #line_bot_api.reply_message(event.reply_token, message)
-    #line_bot_api.reply_message(event.reply_token, [message,message_pic, message_vid])
-    #line_bot_api.reply_message(event.reply_token,"hahahahahaha")print("start chatting!")
-    #response = chatbot.get_response(event.meessage.text)
-    #message = TextSendMessage(text=response)
-
     buttons_template = ButtonsTemplate(
         type='buttons', title=movie_name,
         text='Please select!',
         thumbnail_image_url = movie_pic, image_size = 'contain',
-        actions=[ PostbackTemplateAction(label='postback', text='真愛',data='action=buy&itemid=1')]
+        actions=[ PostbackTemplateAction(label='postback', data='action=buy&itemid=1')]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
     message = TemplateSendMessage(
@@ -112,6 +102,11 @@ def handle_message(event):
         )
     line_bot_api.reply_message(event.reply_token, message)
     #print(response)
+
+@handler.add(PostbackEvent)
+def handle_message(event):
+    print(event.postback.data)
+    line_bot_api.reply_message(event.reply_token,TextSendMessage(text='Hello, world'))
 
 crawl_index_movie()
 import os
