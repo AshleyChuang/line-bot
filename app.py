@@ -52,7 +52,7 @@ def get_trailer_url(movie_name):
     content = r.text
     soup = BeautifulSoup(content, 'html.parser')
     movieVideo = soup.find(class_='mainVideo').find('iframe')['src']
-    print(movieVideo)
+    return movieVideo
 ############
 app = Flask(__name__)
 
