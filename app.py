@@ -95,10 +95,10 @@ def handle_message(event):
     #movie_trailer = get_trailer_url(movie_name)
     #print(movie_trailer)
     buttons_template = ButtonsTemplate(
-        type='buttons', title=movie_name,
+        type='buttons', title="hi",
         text='Please select!',
         thumbnail_image_url = 'https://www.vscinemas.com.tw/upload/film/film_20180313024.jpg',
-        actions=[ PostbackTemplateAction(label='postback', data='movie=%s&action=1'%movie_name)]
+        actions=[ PostbackTemplateAction(label='postback', data='movie=%s&action=1'%"hi")]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
     message = TemplateSendMessage(
