@@ -195,10 +195,10 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
         actions_arr = []
         if len(times) <= 3:
             for t in times:
-                actions_arr.append(URITemplateAction(type = 'uri',label=t[1], uri=t[2]))
+                actions_arr.append(URITemplateAction(type = 'uri',label=t[0], uri=t[1]))
         else:
-            actions_arr.append(URITemplateAction(type = 'uri',label=[0][1], uri=[0][2]))
-            actions_arr.append(URITemplateAction(type = 'uri',label=[1][1], uri=[1][2]))
+            actions_arr.append(URITemplateAction(type = 'uri',label=[0][0], uri=[0][1]))
+            actions_arr.append(URITemplateAction(type = 'uri',label=[1][0], uri=[1][1]))
             actions_arr.append(PostbackTemplateAction(
                 type='postback',label='Get More Show Times',
                 data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
