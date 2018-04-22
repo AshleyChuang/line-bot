@@ -9,7 +9,6 @@ hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
 index_url = 'https://www.vscinemas.com.tw/film/index.aspx'
 coming_url = 'https://www.vscinemas.com.tw/film/coming.aspx'
 movie_dict = {} # movie info: 0->image, 1->start time, 2->detail_url, 3->{theaterList: movie time #}
-input_mode = 0
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -162,16 +161,35 @@ def handle_message(event):
     ## action: 1->場次
     #if action_type == '1':
     crawl_theater(movie_name)
-    if len(movie_dict[movie_name][3]) == 1:
+    theathers = movie_dict[movie_name][3]
+    if len(theathers) == 1:
         # confirm template
         text = '這場電影只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？'
+        message = TemplateSendMessage(
+            alt_text='Confirm template',
+            template=ConfirmTemplate(
+                type = 'confirm',
+                text= next(iter(theaters)),
+                actions=[
+                    PostbackTemplateAction(
+                        type = 'postback',
+                        label='Yes', display_text='Yes',
+                        data='action=buy&itemid=1'
+                    ),
+                    PostbackTemplateAction(
+                        type = 'postback',
+                        label='No. I want to search for other movies', display_text='No. I want to search for other movies',
+                        data='action=buy&itemid=1'
+                    )
+                ]
+            )
+        )
         line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
     else:
         text = ['這個電影在這些影城都有喔～想要在哪一個影城看呀？\n']
-        for i in movie_dict[movie_name][3]:
+        for i in theaters:
             text.append('・'+i+'\n')
         text = ''.join(text)
-        input_mode = 1
         print("input_mode:%d" % input_mode)
         current_movie = movie_name
         line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
