@@ -165,12 +165,12 @@ def handle_message(event):
                     PostbackTemplateAction(
                         type = 'postback',
                         label='Yes', display_text='Yes',
-                        data='movie=%s&action=2' %(movie_name)
+                        data='movie=%s&action=2&confirm=1' %(movie_name)
                     ),
                     PostbackTemplateAction(
                         type = 'postback',
                         label='No', display_text='No. I want to check out other movies.',
-                        data='action=buy&itemid=1'
+                        data='movie=%s&action=2&confirm=0' %(movie_name)
                     )
                 ]
             )
@@ -188,7 +188,10 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
     elif action_type == '2':
         confirm_type = re.search('&comfirm=(.*?)',event.postback.data).group(1)
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='testest'))
+        if confirm_type == 1:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='時刻表'))
+        else:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies!'))
 
 
 crawl_index_movie()
