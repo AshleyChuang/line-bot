@@ -150,49 +150,47 @@ def handle_message(event):
 @handler.add(PostbackEvent)
 def handle_message(event):
     movie_name = re.search('movie=(.*)&',event.postback.data).group(1)
-    action_type = re.search('&action=(.*)',event.postback.data).group(1)
+    action_type = re.search('&action=(.*)&',event.postback.data).group(1)
     movie_url = movie_dict[movie_name][2]
-    ## action: 1->場次
+    ## action: 1->電影院 , 2->只有一個電影院 (confirm-> 1:yes, 0:no),
     #if action_type == '1':
-    crawl_theater(movie_name)
-    theaters = movie_dict[movie_name][3]
-    if len(theaters) == 1:
-        # confirm template
-        text = '這場電影只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？'
-        print(next(iter(theaters)))
-        buttons_template = ButtonsTemplate(
-            type='buttons', title=movie_name[0:40],
-            text='Please select!',
-            thumbnail_image_url = 'https://www.vscinemas.com.tw/upload/film/film_20180410002.jpg',
-            actions=[PostbackTemplateAction(label='Test', data='test=1')]
+    if action_type == '1':
+        crawl_theater(movie_name)
+        theaters = movie_dict[movie_name][3]
+        if len(theaters) == 1:
+            # confirm template
+            text = '《%s》只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？' %(movie_name)
+            confirm_template = ConfirmTemplate(
+                type = 'confirm', text= next(iter(theaters)),
+                actions=[
+                    PostbackTemplateAction(
+                        type = 'postback',
+                        label='Yes', display_text='Yes',
+                        data='movie=%s&action=2' %(movie_name)
+                    ),
+                    PostbackTemplateAction(
+                        type = 'postback',
+                        label='No', display_text='No. I want to check out other movies.',
+                        data='action=buy&itemid=1'
+                    )
+                ]
             )
-        confirm_template = ConfirmTemplate(
-            type = 'confirm', text= 'test',
-            actions=[
-                PostbackTemplateAction(
-                    type = 'postback',
-                    label='Yes', display_text='Yes',
-                    data='action=buy&itemid=1'
-                ),
-                PostbackTemplateAction(
-                    type = 'postback',
-                    label='No', display_text='No',
-                    data='action=buy&itemid=1'
-                )
-            ]
-        )
-        message = TemplateSendMessage(
-            type='template',
-            alt_text='Confirm template',
-            template=confirm_template
-        )
-        line_bot_api.reply_message(event.reply_token, message) #TextSendMessage(text=text)
-    else:
-        text = ['《',movie_name,'》在這些影城都有喔～想要在哪一個影城看呀？\n']
-        for i in theaters:
-            text.append('・'+i+'\n')
-        text = ''.join(text)
-        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
+            message = TemplateSendMessage(
+                type='template',
+                alt_text='Confirm template',
+                template=confirm_template
+            )
+            line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=text),message])
+        else:
+            text = ['《',movie_name,'》在這些影城都有喔～想要在哪一個影城看呀？\n']
+            for i in theaters:
+                text.append('・'+i+'\n')
+            text = ''.join(text)
+            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
+    elif action_type == '2':
+        confirm_type = re.search('&comfirm=(.*)',event.postback.data).group(1)
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='testest'))
+
 
 crawl_index_movie()
 
