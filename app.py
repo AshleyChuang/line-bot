@@ -184,7 +184,7 @@ def generate_carousel_col(date_times, movie_id, movie_theater):
                 actions=[
                     PostbackTemplateAction(
                         type='postback',label='Select Movie Time',
-                        data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, movie_date)
+                        data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
                     )
                 ]
             )
@@ -195,15 +195,15 @@ def generate_carousel_col(date_times, movie_id, movie_theater):
                 actions=[
                     PostbackTemplateAction(
                         type='postback',label='上午時段',
-                        data='movie=%s&action=4&theater=%s&date=%s&slot=1&' %(movie_id, movie_theater, movie_date)
+                        data='movie=%s&action=4&theater=%s&date=%s&slot=1&' %(movie_id, movie_theater, date)
                     ),
                     PostbackTemplateAction(
                         type='postback',label='下午時段',
-                        data='movie=%s&action=4&theater=%s&date=%s&slot=2&' %(movie_id, movie_theater, movie_date)
+                        data='movie=%s&action=4&theater=%s&date=%s&slot=2&' %(movie_id, movie_theater, date)
                     ),
                     PostbackTemplateAction(
                         type='postback',label='晚間時段',
-                        data='movie=%s&action=4&theater=%s&date=%s&slot=3&' %(movie_id, movie_theater, movie_date)
+                        data='movie=%s&action=4&theater=%s&date=%s&slot=3&' %(movie_id, movie_theater, date)
                     )
                 ]
             )
