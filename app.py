@@ -123,7 +123,7 @@ def get_movie_by_keyword(keyword):
         type='buttons', title=movie_name[0:40],
         text='Please select!',
         thumbnail_image_url = movie_pic,
-        actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1'%movie_name),uri_template]
+        actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1&'%movie_name),uri_template]
         )
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
         #PostbackTemplateAction(label='Movie Times', data='movie=%s&action=1'%movie_name),
@@ -151,7 +151,6 @@ def handle_message(event):
 def handle_message(event):
     movie_name = re.search('movie=(.*)&',event.postback.data).group(1)
     action_type = re.search('&action=(.*)&',event.postback.data).group(1)
-    movie_url = movie_dict[movie_name][2]
     ## action: 1->電影院 , 2->只有一個電影院 (confirm-> 1:yes, 0:no),
     #if action_type == '1':
     if action_type == '1':
