@@ -176,7 +176,7 @@ def handle_message(event):
                 ),
                 PostbackTemplateAction(
                     type = 'postback',
-                    label='No. I want to search for other movies', display_text='No. I want to search for other movies',
+                    label='No', display_text='No',
                     data='action=buy&itemid=1'
                 )
             ]
