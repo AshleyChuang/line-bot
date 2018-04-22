@@ -257,12 +257,12 @@ def handle_message(event):
             # 用carousel來分上午下午晚上
             movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
             crawl_movie_time(movie_id, movie_theater)
+            movie_days = movie_dict[movie_id][3][movie_theater] # [date_times,...]
             if len(movie_days) <= 0:
                 line_bot_api.reply_message(event.reply_token, [
                 TextSendMessage(text="Sorry! Can't find any movie times in the theater. Try another movie!"),
                 TextSendMessage(text='Search for other movies by keyword!')])
             movie_days_col = []
-            movie_days = movie_dict[movie_id][3][movie_theater] # [date_times,...]
             description = ''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]])
             for date_times in movie_days:
                 col = generate_carousel_col(date_times, description, movie_id, movie_theater)
