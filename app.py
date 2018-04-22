@@ -155,7 +155,7 @@ def handle_message(event):
     #if action_type == '1':
     crawl_theater(movie_name)
     theaters = movie_dict[movie_name][3]
-    if len(theathers) == 1:
+    if len(theaters) == 1:
         # confirm template
         text = '這場電影只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？'
         message = TemplateSendMessage(
