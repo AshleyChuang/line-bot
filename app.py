@@ -222,9 +222,9 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
 
 def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_time):
     date_times = movie_dict[movie_id][3][movie_theater]
-    theater_name = movie_dict[movie_id][2][movie_theater]]
+    theater_name = movie_dict[movie_id][2][movie_theater]
     col = []
-    description = ''.join(['《',movie_dict[movie_id][0], '》@', theater_name)
+    description = ''.join(['《',movie_dict[movie_id][0], '》@', theater_name])
     print("movie date:", movie_date)
     for date in date_times:
         print("date:",date)
