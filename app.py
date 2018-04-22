@@ -72,9 +72,27 @@ def crawl_theater(movie_id):
     theaterList = soup.find("ul", {"class": "versionList"}).find("li").find_all("li")
     for i in theaterList:
         t = i.find('a')
-        movie_theater[t.text] = t['href']
+        movie_theater[t['href']] = t.text
     movie_dict[movie_id][2] = movie_theater
-    print(movie_dict[movie_id][2])
+
+def crawl_movie_time(movie_id, movie_theater):
+    url = detail_url_by_id + movie_id
+    print(movie_id)
+    print(movie_theater[1:])
+    r = requests.get(url)
+    content = r.text
+    soup = BeautifulSoup(content, 'html.parser')
+    movieDays = soup.find(class_='movieTime').find("article", {"id": movie_theater[1:]}).find_all("div", {"class": "movieDay"})
+    for day in movieDays:
+        date = day.find("h4").text
+        sessions = day.find("ul", {"class": "bookList"}).find_all("li")
+        print("date: ", date)
+        for sess in sessions:
+            time_session = sess.find('a')
+            time = time_session.text
+            booking_url = time_session['href']
+            print("time: %s, url: %s" % (time, booking_url) )
+
 
 ############
 app = Flask(__name__)
@@ -135,19 +153,10 @@ def get_movie_by_keyword(keyword):
         )
     return message
 
-def get_theater(keyword):
-    theaters = movie_dict[current_movie][3].keys()
-    for i in theaters:
-        if keyword in i:
-            message = TextSendMessage(text=i)
-            return message
-    return TextSendMessage(text=next(iter(theaters)))
-
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     message = get_movie_by_keyword(event.message.text)
     line_bot_api.reply_message(event.reply_token, message)
-
 
 @handler.add(PostbackEvent)
 def handle_message(event):
@@ -163,7 +172,7 @@ def handle_message(event):
             # confirm template
             text = '《%s》目前只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？' %(movie_name)
             confirm_template = ConfirmTemplate(
-                type = 'confirm', text= next(iter(theaters)),
+                type = 'confirm', text= next(iter(theaters.values())),
                 actions=[
                     PostbackTemplateAction(
                         type = 'postback',
@@ -186,13 +195,15 @@ def handle_message(event):
         else:
             text = ['《',movie_name,'》在這些影城都有喔～想要在哪一個影城看呀？\n']
             for i in theaters:
-                text.append('・'+i+'\n')
+                text.append('・'+theaters[i]+'\n')
             text = ''.join(text)
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
     elif action_type == '2':
         confirm_type = re.search('&confirm=(.+?)',event.postback.data).group(1)
         print(event.postback.data)
         if confirm_type == '1':
+            # 用carousel來分上午下午晚上
+            #crawl_movie_time(movie_id, )
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='時刻表'))
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies!'))
