@@ -209,7 +209,9 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
     date_times = movie_dict[movie_id][3][movie_theater]
     col = []
     description = ''.join(['《',movie_dict[movie_id][0], '》@', movie_dict[movie_id][2][movie_theater]])
+    print("movie date:", movie_date)
     for date in date_times:
+        print("date:",date)
         if date[0] == movie_date:
             time_sessions = date[1] # it's an array of show times for the movie in designated theater
             for session in time_sessions:
