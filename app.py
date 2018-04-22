@@ -9,8 +9,8 @@ hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
 index_url = 'https://www.vscinemas.com.tw/film/index.aspx'
 detail_url_by_id = 'https://www.vscinemas.com.tw/film/detail.aspx?id='
 coming_url = 'https://www.vscinemas.com.tw/film/coming.aspx'
-movie_dict = {} # movie info: 0->image, 1->start time, 2->detail_url, 3->{theaterList: movie time #}
-# movie info by movie id: 0->movie name, 1->image, 2->{theaterList: movie time #}
+movie_dict = {}
+# movie info by movie id: 0->movie name, 1->image, 2->{theater_id:theater_name}, 3->{theater_id: [ dates "[date, [tuple(time, url)] ]" ]}
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -42,7 +42,7 @@ def crawl_index_movie():
             movie_start_time = m.find('time').text
             movie_img = m.find('img')['src'].replace('../', vieshow_url)
             #info = [movie_img,movie_start_time, movie_info_url, {}]
-            info = [movie_name, movie_img, {}]
+            info = [movie_name, movie_img, {}, {}]
             movie_dict[movie_id] = info
         next_page_url = index_url + p['href']
         soup = BeautifulSoup(requests.get(next_page_url).text, 'html.parser')
@@ -77,6 +77,8 @@ def crawl_theater(movie_id):
     movie_dict[movie_id][2] = movie_theater
 
 def crawl_movie_time(movie_id, movie_theater):
+    # movie_dict_key=3  -> {theater_id: [ dates "[date, [tuple(time, url)] ]" ]}
+    all_times_in_theaters = [] # element: [date, [tuple]]
     url = detail_url_by_id + movie_id
     print(movie_id)
     print(movie_theater[1:])
@@ -87,22 +89,25 @@ def crawl_movie_time(movie_id, movie_theater):
     if movie_times is None:
         return []
     movieDays = movie_times.find_all("div", {"class": "movieDay"})
-    dates = []
+    dates = [] # date -> times&urls
     for day in movieDays:
+        date2times = []
+        #dates.append(date)
         date = day.find("h4").text
+        date2times.append(date)
         dates.append(date)
         sessions = day.find("ul", {"class": "bookList"}).find_all("li")
-        print("date: ", date)
-        '''
+        timesessions = []
         for sess in sessions:
-            time_session = sess.find('a')
-            time = time_session.text
+            time = sess.find('a').text
             if "soldout" in sess.attrs['class']:
-                print("soldout")
                 continue
             booking_url = time_session['href']
-            print("time: %s, url: %s" % (time, booking_url) )
-        '''
+            timesessions.append( (time, booking_url) )
+        date2times.append(timesessions)
+        all_times_in_theaters.append(date2times)
+    movie_dict[movie_id][3][movie_theater] = all_times_in_theaters
+    print(all_times_in_theaters)
     return dates
 
 ############
