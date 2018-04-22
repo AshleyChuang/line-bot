@@ -241,7 +241,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
                 print(session[1])
                 if hour >= from_time and hour < to_time:
                     col.append(CarouselColumn(
-                        title=movie_time, text='test',
+                        title=movie_date+" "+movie_time, text=description[0:60],
                         actions=[
                             URITemplateAction(
                                 type='uri',
@@ -293,9 +293,6 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=text),message])
         else:
             text = ['《',movie_name,'》目前有在以下的威秀影城播出喔！選擇您想要的影城吧～\n']
-            for i in theaters:
-                text.append('・'+theaters[i]+'\n')
-            text = ''.join(text)
             if len(theaters) <=10:
                 col = []
                 for t in theaters:
@@ -310,7 +307,7 @@ def handle_message(event):
                     ))
                 carousel_template = CarouselTemplate(type='carousel', columns=col)
                 message = TemplateSendMessage(type='template',alt_text='Choose Theater',template=carousel_template)
-                line_bot_api.reply_message(event.reply_token,message)
+                line_bot_api.reply_message(event.reply_token,[TextSendMessage(text=text),message])
             else:
                 line_bot_api.reply_message(event.reply_token,TextSendMessage(text="more than 10 theaters"))
     elif action_type == '2':
