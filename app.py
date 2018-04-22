@@ -80,8 +80,6 @@ def crawl_movie_time(movie_id, movie_theater):
     # movie_dict_key=3  -> {theater_id: [ dates "[date, [tuple(time, url)] ]" ]}
     all_times_in_theaters = [] # element: [date, [tuple]]
     url = detail_url_by_id + movie_id
-    print(movie_id)
-    print(movie_theater[1:])
     r = requests.get(url)
     content = r.text
     soup = BeautifulSoup(content, 'html.parser')
@@ -108,7 +106,6 @@ def crawl_movie_time(movie_id, movie_theater):
         date2times.append(timesessions)
         all_times_in_theaters.append(date2times)
     movie_dict[movie_id][3][movie_theater] = all_times_in_theaters
-    print(all_times_in_theaters)
     return dates
 
 ############
@@ -153,7 +150,6 @@ def get_movie_by_keyword(keyword):
     movie_pic = movie_dict[movie_id][1]
     movie_url = detail_url_by_id + movie_id
     movie_trailer = get_trailer_url(movie_url)
-    #print(movie_trailer)
     if movie_trailer is None:
         uri_template = URITemplateAction(type = 'uri',label='Picture', uri=movie_pic)
     else:
@@ -162,7 +158,7 @@ def get_movie_by_keyword(keyword):
         type='buttons', title=movie_name[0:40],
         text='Check out more information for the movie!',
         thumbnail_image_url = movie_pic,
-        actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1&'%movie_id),uri_template]
+        actions=[PostbackTemplateAction(label='Show Times', data='movie=%s&action=1&'%movie_id),uri_template]
         )
     message = TemplateSendMessage(
         type = 'template', alt_text=movie_name,
@@ -178,13 +174,12 @@ def handle_message(event):
 def generate_carousel_col(date_times,description, movie_id, movie_theater):
     date = date_times[0]
     times = date_times[1]
-    print(len(date), len(times))
     if len(times) <= 10:
         col = CarouselColumn(
                 title=date, text=description[0:60],
                 actions=[
                     PostbackTemplateAction(
-                        type='postback',label='Movie Time',
+                        type='postback',label='Get Show Times',
                         data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
                     )
                 ]
@@ -209,6 +204,16 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
                 ]
             )
         return col
+
+def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_time):
+    date_times = movie_dict[movie_id][3][movie_theater]
+    for date in date_times:
+        if date[0] == movie_date:
+            time_session = date[1]
+            print(time_session)
+            break
+    return TextSendMessage(text='test')
+
 
 @handler.add(PostbackEvent)
 def handle_message(event):
@@ -253,7 +258,6 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
     elif action_type == '2':
         confirm_type = re.search('&confirm=(.+?)&',event.postback.data).group(1)
-        print(event.postback.data)
         if confirm_type == '1':
             # 用carousel來分上午下午晚上
             movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
@@ -270,10 +274,12 @@ def handle_message(event):
                     col = generate_carousel_col(date_times, description, movie_id, movie_theater)
                     movie_days_col.append(col)
                 carousel_template = CarouselTemplate(tyep='carousel', columns=movie_days_col)
-                carousel_template_message = TemplateSendMessage(type = 'template',alt_text='Moive Dates',template=carousel_template)
+                carousel_template_message = TemplateSendMessage(type = 'template',alt_text='Select Moive Dates',template=carousel_template)
                 line_bot_api.reply_message(event.reply_token, carousel_template_message)
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies by keyword!'))
+    elif action_type == '3':
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='The movie xxx is now playing in the following theaters. Please Select Your Theater.'))
     elif action_type =='4':
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
@@ -281,15 +287,19 @@ def handle_message(event):
         if time_slot == '0':
             # display all the times
             print(movie_dict[movie_id][3][movie_theater])
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='test'))
+            message = get_movie_times_message(movie_id, movie_theater, movie_date, 0, 24)
+            line_bot_api.reply_message(event.reply_token, message)
         elif time_slot == '1':
             # only in morning
+            message = get_movie_times_message(movie_id, movie_theater, movie_date, 4, 12)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='test1'))
         elif time_slot == '2':
             # only in afternoon
+            message = get_movie_times_message(movie_id, movie_theater, movie_date, 12, 18)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='test2'))
         elif time_slot == '3':
             # only in night
+            message = get_movie_times_message(movie_id, movie_theater, movie_date, 18, 4)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='test3'))
 
 crawl_index_movie()
