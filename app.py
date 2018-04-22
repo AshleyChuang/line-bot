@@ -237,6 +237,7 @@ def handle_message(event):
                 type = 'template',
                 alt_text='Carousel template',
                 template=carousel_template)
+            print(''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]]))
             text_message = TextSendMessage(text=''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]]))
             line_bot_api.reply_message(event.reply_token, [text_message,carousel_template_message])
         else:
