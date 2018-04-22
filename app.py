@@ -300,7 +300,7 @@ def handle_message(event):
                 col = []
                 for t in theaters:
                     col.append(CarouselColumn(
-                        title=theaters[i], text='address',
+                        title=theaters[t], text='address',
                         actions=[
                             PostbackTemplateAction(
                                 label='Learn more',
