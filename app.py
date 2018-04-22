@@ -95,19 +95,19 @@ def crawl_movie_time(movie_id, movie_theater):
         date = date.replace('年', '/').replace('月', '/').replace('日', '/',1)
         print(date)
         if '一' in date:
-            date = date.replace('星期一', '(Mon)')
+            date = date.replace('/ 星期一', '(Mon)')
         elif '二' in date:
-            date = date.replace('星期二', '(Tue)')
+            date = date.replace('/ 星期二', '(Tue)')
         elif '三' in date:
-            date = date.replace('星期三', '(Wed)')
+            date = date.replace('/ 星期三', '(Wed)')
         elif '四' in date:
-            date = date.replace('星期四', '(Thu)')
+            date = date.replace('/ 星期四', '(Thu)')
         elif '五' in date:
-            date = date.replace('星期五', '(Fri)')
+            date = date.replace('/ 星期五', '(Fri)')
         elif '六' in date:
-            date = date.replace('星期六', '(Sat)')
+            date = date.replace('/ 星期六', '(Sat)')
         elif '日' in date:
-            date = date.replace('星期日', '(Sun)')
+            date = date.replace('/ 星期日', '(Sun)')
         print(date)
         date2times.append(date)
         dates.append(date)
@@ -233,7 +233,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
         if date[0] == movie_date:
             time_sessions = date[1] # it's an array of show times for the movie in designated theater
             if len(time_sessions) == 0:
-                return TextSendMessage(text='Oops! All the shows @%s on %s are sold out now!(0x10007C)' % (theater_name,movie_date))
+                return TextSendMessage(text='Oops! All the shows @%s on %s are sold out now!' % (theater_name,movie_date))
             for session in time_sessions:
                 movie_time = session[0]
                 hour = int(movie_time.split(':')[0])
@@ -269,7 +269,7 @@ def handle_message(event):
         if len(theaters) == 1:
             # confirm template
             theater = next(iter(theaters))
-            text = '《%s》is now playing only in the following theater！\nDo you want to get show times in it ( 0x100036 )' %(movie_name)
+            text = '《%s》is now playing only in the following theater！\nDo you want to get the show times?' %(movie_name)
             confirm_template = ConfirmTemplate(
                 type = 'confirm', text= theaters[theater],
                 actions=[
