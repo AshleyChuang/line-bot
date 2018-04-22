@@ -192,15 +192,20 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
     date = date_times[0]
     times = date_times[1]
     if len(times) <= 10:
+        actions_arr = []
+        if len(times) <= 3:
+            for t in times:
+                actions_arr.append(URITemplateAction(type = 'uri',label=t[1], uri=t[2]))
+        else:
+            actions_arr.append(URITemplateAction(type = 'uri',label=[0][1], uri=[0][2]))
+            actions_arr.append(URITemplateAction(type = 'uri',label=[1][1], uri=[1][2]))
+            actions_arr.append(PostbackTemplateAction(
+                type='postback',label='Get More Show Times',
+                data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
+            ))
         col = CarouselColumn(
                 title=date, text=description[0:60],
-                actions=[
-                    PostbackTemplateAction(
-                        type='postback',label='Get Show Times',
-                        data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
-                    )
-                ]
-            )
+                actions=actions_arr)
         return col
     else:
         col = CarouselColumn(
