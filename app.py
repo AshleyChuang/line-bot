@@ -178,6 +178,7 @@ def handle_message(event):
 def generate_carousel_col(date_times, movie_id, movie_theater):
     date = date_times[0]
     times = date_times[1]
+    print(date, times)
     if len(times) <= 10:
         col = CarouselColumn(
                 title=date,
