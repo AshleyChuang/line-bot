@@ -95,19 +95,19 @@ def crawl_movie_time(movie_id, movie_theater):
         date = date.replace('年', '/').replace('月', '/').replace('日', '/',1)
         print(date)
         if '一' in date:
-            date.replace('星期一', '(Mon)')
+            date = date.replace('星期一', '(Mon)')
         elif '二' in date:
-            date.replace('星期二', '(Tue)')
+            date = date.replace('星期二', '(Tue)')
         elif '三' in date:
-            date.replace('星期三', '(Wed)')
+            date = date.replace('星期三', '(Wed)')
         elif '四' in date:
-            date.replace('星期四', '(Thu)')
+            date = date.replace('星期四', '(Thu)')
         elif '五' in date:
-            date.replace('星期五', '(Fri)')
+            date = date.replace('星期五', '(Fri)')
         elif '六' in date:
-            date.replace('星期六', '(Sat)')
+            date = date.replace('星期六', '(Sat)')
         elif '日' in date:
-            date.replace('星期日', '(Sun)')
+            date = date.replace('星期日', '(Sun)')
         print(date)
         date2times.append(date)
         dates.append(date)
