@@ -149,8 +149,8 @@ def handle_message(event):
 
 @handler.add(PostbackEvent)
 def handle_message(event):
-    movie_name = re.search('movie=(.*)&',event.postback.data).group(1)
-    action_type = re.search('&action=(.*)&',event.postback.data).group(1)
+    movie_name = re.search('movie=(.*?)&',event.postback.data).group(1)
+    action_type = re.search('&action=(.*?)&',event.postback.data).group(1)
     ## action: 1->電影院 , 2->只有一個電影院 (confirm-> 1:yes, 0:no),
     #if action_type == '1':
     if action_type == '1':
@@ -187,7 +187,7 @@ def handle_message(event):
             text = ''.join(text)
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
     elif action_type == '2':
-        confirm_type = re.search('&comfirm=(.*)',event.postback.data).group(1)
+        confirm_type = re.search('&comfirm=(.*?)',event.postback.data).group(1)
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='testest'))
 
 
