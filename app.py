@@ -9,6 +9,7 @@ hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
 index_url = 'https://www.vscinemas.com.tw/film/index.aspx'
 coming_url = 'https://www.vscinemas.com.tw/film/coming.aspx'
 movie_dict = {} # movie info: 0->image, 1->start time, 2->detail_url, 3->{theaterList: movie time #}
+input_mode = 0
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -81,11 +82,13 @@ line_bot_api = LineBotApi('bQu1j0/rJMgNGK++uQcD1Pu8zLcB/Gdp3kwwcwrP4Quj33AGyX1wZ
 # Channel Secret
 handler = WebhookHandler('756c8ca2e53d032ae70d8e1cb6624294')
 
+# push every day
+'''
 try:
     line_bot_api.push_message('U84434259e4dcdd16ea11fd37a358b6e7', TextSendMessage(text='Hello World!'))
 except LineBotApiError as e:
     abort(400)
-
+'''
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
@@ -141,8 +144,14 @@ def get_theater(keyword):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    message = get_movie_by_keyword(event.message.text)
-    line_bot_api.reply_message(event.reply_token, message)
+    print("input_mode:%d" % input_mode)
+    if input_mode == 0:
+        message = get_movie_by_keyword(event.message.text)
+        line_bot_api.reply_message(event.reply_token, message)
+    elif input_mode == 1:
+        input_mode = 0
+        message = get_theater(event.message.text)
+        line_bot_api.reply_message(event.reply_token, message)
 
 @handler.add(PostbackEvent)
 def handle_message(event):
@@ -162,6 +171,7 @@ def handle_message(event):
             text.append('・'+i+'\n')
         text = ''.join(text)
         input_mode = 1
+        print("input_mode:%d" % input_mode)
         current_movie = movie_name
         line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
 
