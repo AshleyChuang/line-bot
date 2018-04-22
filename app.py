@@ -35,7 +35,8 @@ def crawl_index_movie():
     for p in moviePage[1:]:
         movieList = soup.find(class_='movieList').find_all('li')
         for m in movieList:
-            movie_name = "%s (%s)" % (m.find('h2').text, m.find('h3').text)
+            #movie_name = "%s (%s)" % (m.find('h2').text, m.find('h3').text)
+            movie_name = m.find('h2').text
             movie_id = re.search('id=(.*)',m.find('h2').find('a')['href']).group(1)
             movie_info_url = vieshow_url + 'film/' + m.find('h2').find('a')['href']
             movie_start_time = m.find('time').text
@@ -235,11 +236,11 @@ def handle_message(event):
             carousel_template = CarouselTemplate(tyep='carousel', columns=movie_days_col)
             carousel_template_message = TemplateSendMessage(
                 type = 'template',
-                alt_text='Carousel template',
+                alt_text='Moive Dates',
                 template=carousel_template)
             print(''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]]))
             text_message = TextSendMessage(text=''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]]))
-            line_bot_api.reply_message(event.reply_token, text_message)
+            line_bot_api.reply_message(event.reply_token, [text_message,carousel_template_message])
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies by keyword!'))
 
