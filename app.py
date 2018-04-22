@@ -207,12 +207,28 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
 
 def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_time):
     date_times = movie_dict[movie_id][3][movie_theater]
+    col = []
+    description = ''.join(['《',movie_dict[movie_id][0], '》@', movie_dict[movie_id][2][movie_theater]])
     for date in date_times:
         if date[0] == movie_date:
-            time_session = date[1]
-            print(time_session)
+            time_sessions = date[1] # it's an array of show times for the movie in designated theater
+            for session in time_sessions:
+                movie_time = session[0]
+                hour = int(movie_time.split(':')[0])
+                if hour >= from_time and hour <= to_time:
+                    col.append(CarouselColumn(
+                        title=movie_date+" "+movie_time, text=description[0:60],
+                        actions=[
+                            URITemplateAction(
+                                label='Booking',
+                                uri=session[1]
+                            )
+                        ]
+                    ))
             break
-    return TextSendMessage(text='test')
+    carousel_template =CarouselTemplate(type='carousel', columns=col)
+    message = TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
+    return message
 
 
 @handler.add(PostbackEvent)
@@ -286,22 +302,17 @@ def handle_message(event):
         time_slot = re.search('&slot=(.+?)&',event.postback.data).group(1)
         if time_slot == '0':
             # display all the times
-            print(movie_dict[movie_id][3][movie_theater])
             message = get_movie_times_message(movie_id, movie_theater, movie_date, 0, 24)
-            line_bot_api.reply_message(event.reply_token, message)
         elif time_slot == '1':
             # only in morning
             message = get_movie_times_message(movie_id, movie_theater, movie_date, 4, 12)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='test1'))
         elif time_slot == '2':
             # only in afternoon
             message = get_movie_times_message(movie_id, movie_theater, movie_date, 12, 18)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='test2'))
         elif time_slot == '3':
             # only in night
             message = get_movie_times_message(movie_id, movie_theater, movie_date, 18, 4)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='test3'))
-
+        line_bot_api.reply_message(event.reply_token, message)
 crawl_index_movie()
 
 import os
