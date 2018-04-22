@@ -182,7 +182,7 @@ def handle_message(event):
                     PostbackTemplateAction(
                         type = 'postback',
                         label='Yes', display_text='Yes',
-                        data='movie=%s&action=2&confirm=1&theater=%s' %(movie_id, theater)
+                        data='movie=%s&action=2&confirm=1&theater=%s&' %(movie_id, theater)
                     ),
                     PostbackTemplateAction(
                         type = 'postback',
@@ -208,7 +208,8 @@ def handle_message(event):
         print(event.postback.data)
         if confirm_type == '1':
             # 用carousel來分上午下午晚上
-            movie_theater = re.search('&theater=(.+?)',event.postback.data).group(1)
+            movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
+            print(movie_theater)
             movie_days = crawl_movie_time(movie_id, movie_theater)
             print(movie_days)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=''.join(movie_days)))
