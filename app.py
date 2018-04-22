@@ -163,8 +163,8 @@ def handle_message(event):
         buttons_template = ButtonsTemplate(
             type='buttons', title=movie_name[0:40],
             text='Please select!',
-            thumbnail_image_url = movie_pic,
-            actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1'%movie_name),uri_template]
+            thumbnail_image_url = 'https://www.vscinemas.com.tw/upload/film/film_20180410002.jpg',
+            actions=[PostbackTemplateAction(label='Test', data='test=1')]
             )
         confirm_template = ConfirmTemplate(
             type = 'confirm', text= 'test',
