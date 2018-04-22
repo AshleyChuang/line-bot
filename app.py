@@ -304,7 +304,7 @@ def handle_message(event):
                         actions=[
                             PostbackTemplateAction(
                                 label='Learn more',
-                                data='movie=%s&action=2&confirm=1&theater=%s&'%(movie_id, theater)
+                                data='movie=%s&action=2&confirm=1&theater=%s&'%(movie_id, t)
                             )
                         ]
                     ))
