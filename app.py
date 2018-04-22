@@ -336,7 +336,7 @@ def handle_message(event):
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='可以用關鍵字來找其他的電影呦～'))
     elif action_type == '3':
-        #line_bot_api.reply_message(event.reply_token, TextSendMessage(text='The movie xxx is now playing in the following theaters. Please Select Your Theater.'))
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='The movie xxx is now playing in the following theaters. Please Select Your Theater.'))
     elif action_type =='4':
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
