@@ -83,16 +83,20 @@ def crawl_movie_time(movie_id, movie_theater):
     content = r.text
     soup = BeautifulSoup(content, 'html.parser')
     movieDays = soup.find(class_='movieTime').find("article", {"id": movie_theater[1:]}).find_all("div", {"class": "movieDay"})
+    dates = []
     for day in movieDays:
         date = day.find("h4").text
-        sessions = day.find("ul", {"class": "bookList"}).find_all("li")
-        print("date: ", date)
+        dates.append(date)
+        #sessions = day.find("ul", {"class": "bookList"}).find_all("li")
+        #print("date: ", date)
+        '''
         for sess in sessions:
             time_session = sess.find('a')
             time = time_session.text
             booking_url = time_session['href']
             print("time: %s, url: %s" % (time, booking_url) )
-
+        '''
+    return dates
 
 ############
 app = Flask(__name__)
@@ -143,7 +147,7 @@ def get_movie_by_keyword(keyword):
         uri_template = URITemplateAction(type = 'uri',label='Trailer', uri=movie_trailer)
     buttons_template = ButtonsTemplate(
         type='buttons', title=movie_name[0:40],
-        text='Check out more information of the movie!',
+        text='Check out more information for the movie!',
         thumbnail_image_url = movie_pic,
         actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1&'%movie_id),uri_template]
         )
@@ -170,19 +174,20 @@ def handle_message(event):
         theaters = movie_dict[movie_id][2]
         if len(theaters) == 1:
             # confirm template
+            theater = next(iter(theaters))
             text = '《%s》目前只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？' %(movie_name)
             confirm_template = ConfirmTemplate(
-                type = 'confirm', text= next(iter(theaters.values())),
+                type = 'confirm', text= theaters[theater],
                 actions=[
                     PostbackTemplateAction(
                         type = 'postback',
                         label='Yes', display_text='Yes',
-                        data='movie=%s&action=2&confirm=1' %(movie_id)
+                        data='movie=%s&action=2&confirm=1&theater=%s' %(movie_id, theater)
                     ),
                     PostbackTemplateAction(
                         type = 'postback',
                         label='No', display_text='No. I want to check out other movies.',
-                        data='movie=%s&action=2&confirm=0' %(movie_id)
+                        data='movie=%s&action=2&confirm=0&' %(movie_id)
                     )
                 ]
             )
@@ -199,14 +204,16 @@ def handle_message(event):
             text = ''.join(text)
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
     elif action_type == '2':
-        confirm_type = re.search('&confirm=(.+?)',event.postback.data).group(1)
+        confirm_type = re.search('&confirm=(.+?)&',event.postback.data).group(1)
         print(event.postback.data)
         if confirm_type == '1':
             # 用carousel來分上午下午晚上
-            #crawl_movie_time(movie_id, )
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='時刻表'))
+            movie_theater = re.search('&theater=(.+?)',event.postback.data).group(1)
+            movie_days = crawl_movie_time(movie_id, movie_theater)
+            print(movie_days)
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=''.join(movie_days)))
         else:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies!'))
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies by keyword!'))
 
 
 crawl_index_movie()
