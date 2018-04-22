@@ -158,7 +158,7 @@ def handle_message(event):
         theaters = movie_dict[movie_name][3]
         if len(theaters) == 1:
             # confirm template
-            text = '《%s》只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？' %(movie_name)
+            text = '《%s》目前只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？' %(movie_name)
             confirm_template = ConfirmTemplate(
                 type = 'confirm', text= next(iter(theaters)),
                 actions=[
@@ -187,7 +187,7 @@ def handle_message(event):
             text = ''.join(text)
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
     elif action_type == '2':
-        confirm_type = re.search('&comfirm=(.*?)',event.postback.data).group(1)
+        confirm_type = re.search('&confirm=(.*?)',event.postback.data).group(1)
         if confirm_type == 1:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='時刻表'))
         else:
