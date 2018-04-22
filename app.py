@@ -7,8 +7,10 @@ from datetime import datetime
 vieshow_url = 'https://www.vscinemas.com.tw/'
 hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
 index_url = 'https://www.vscinemas.com.tw/film/index.aspx'
+detail_url_by_id = 'https://www.vscinemas.com.tw/film/detail.aspx?id='
 coming_url = 'https://www.vscinemas.com.tw/film/coming.aspx'
 movie_dict = {} # movie info: 0->image, 1->start time, 2->detail_url, 3->{theaterList: movie time #}
+# movie info by movie id: 0->movie name, 1->image, 2->{theaterList: movie time #}
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -34,22 +36,23 @@ def crawl_index_movie():
         movieList = soup.find(class_='movieList').find_all('li')
         for m in movieList:
             movie_name = "%s (%s)" % (m.find('h2').text, m.find('h3').text)
+            movie_id = re.search('id=(.*)',m.find('h2').find('a')['href']).group(1)
             movie_info_url = vieshow_url + 'film/' + m.find('h2').find('a')['href']
             movie_start_time = m.find('time').text
             movie_img = m.find('img')['src'].replace('../', vieshow_url)
-            info = [movie_img,movie_start_time, movie_info_url, {}]
-            movie_dict[movie_name] = info
+            #info = [movie_img,movie_start_time, movie_info_url, {}]
+            info = [movie_name, movie_img, {}]
+            movie_dict[movie_id] = info
         next_page_url = index_url + p['href']
         soup = BeautifulSoup(requests.get(next_page_url).text, 'html.parser')
 
-def search_movie_name(text):
-    for movie in movie_dict:
-        if text in movie:
-            return movie
+def search_movie_id(text):
+    for movie_id in movie_dict:
+        if text in movie_dict[movie_id][0]:
+            return movie_dict[movie_id][0]
     return None
 
-def get_trailer_url(movie_name):
-    url = movie_dict[movie_name][2]
+def get_trailer_url(url):
     r = requests.get(url)
     content = r.text
     soup = BeautifulSoup(content, 'html.parser')
@@ -58,9 +61,9 @@ def get_trailer_url(movie_name):
         return None
     return movieVideo.find('iframe')['src']
 
-def crawl_theater(movie_name):
-    url = movie_dict[movie_name][2]
-    if len(movie_dict[movie_name][3]) != 0:
+def crawl_theater(movie_id):
+    url = detail_url_by_id + movie_id
+    if len(movie_dict[movie_id][2]) != 0:
         return None
     movie_theater = {}
     r = requests.get(url)
@@ -70,8 +73,8 @@ def crawl_theater(movie_name):
     for i in theaterList:
         t = i.find('a')
         movie_theater[t.text] = t['href']
-    movie_dict[movie_name][3] = movie_theater
-    print(movie_dict[movie_name][3])
+    movie_dict[movie_id][2] = movie_theater
+    print(movie_dict[movie_id][2])
 
 ############
 app = Flask(__name__)
@@ -108,12 +111,13 @@ def callback():
     return 'OK'
 
 def get_movie_by_keyword(keyword):
-    movie_name = search_movie_name(keyword)
-    if movie_name is None:
+    movie_id = search_movie_id(keyword)
+    if movie_id is None:
         return TextSendMessage(text="沒有這個電影耶～查查看別的吧！")
-    movie_pic = movie_dict[movie_name][0]
-    movie_url = movie_dict[movie_name][2]
-    movie_trailer = get_trailer_url(movie_name)
+    movie_name = movie_dict[movie_id][0]
+    movie_pic = movie_dict[movie_id][1]
+    movie_url = detail_url_by_id + movie_id
+    movie_trailer = get_trailer_url(movie_url)
     #print(movie_trailer)
     if movie_trailer is None:
         uri_template = URITemplateAction(type = 'uri',label='Picture', uri=movie_pic)
@@ -123,10 +127,8 @@ def get_movie_by_keyword(keyword):
         type='buttons', title=movie_name[0:40],
         text='Please select!',
         thumbnail_image_url = movie_pic,
-        actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1&'%movie_name),uri_template]
+        actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1&'%movie_id),uri_template]
         )
-        #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
-        #PostbackTemplateAction(label='Movie Times', data='movie=%s&action=1'%movie_name),
     message = TemplateSendMessage(
         type = 'template', alt_text='Check out more information of the movie!',
         template=buttons_template
@@ -149,13 +151,14 @@ def handle_message(event):
 
 @handler.add(PostbackEvent)
 def handle_message(event):
-    movie_name = re.search('movie=(.*?)&',event.postback.data).group(1)
-    action_type = re.search('&action=(.*?)&',event.postback.data).group(1)
+    movie_id = re.search('movie=(.+?)&',event.postback.data).group(1)
+    action_type = re.search('&action=(.+?)&',event.postback.data).group(1)
+    movie_name = movie_dict[movie_id][0]
     ## action: 1->電影院 , 2->只有一個電影院 (confirm-> 1:yes, 0:no),
     #if action_type == '1':
     if action_type == '1':
-        crawl_theater(movie_name)
-        theaters = movie_dict[movie_name][3]
+        crawl_theater(movie_id)
+        theaters = movie_dict[movie_id][2]
         if len(theaters) == 1:
             # confirm template
             text = '《%s》目前只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？' %(movie_name)
@@ -165,12 +168,12 @@ def handle_message(event):
                     PostbackTemplateAction(
                         type = 'postback',
                         label='Yes', display_text='Yes',
-                        data='movie=%s&action=2&confirm=1' %(movie_name)
+                        data='movie=%s&action=2&confirm=1' %(movie_id)
                     ),
                     PostbackTemplateAction(
                         type = 'postback',
                         label='No', display_text='No. I want to check out other movies.',
-                        data='movie=%s&action=2&confirm=0' %(movie_name)
+                        data='movie=%s&action=2&confirm=0' %(movie_id)
                     )
                 ]
             )
@@ -187,7 +190,7 @@ def handle_message(event):
             text = ''.join(text)
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
     elif action_type == '2':
-        confirm_type = re.search('&confirm=(.*?)',event.postback.data).group(1)
+        confirm_type = re.search('&confirm=(.+?)',event.postback.data).group(1)
         print(event.postback.data)
         if confirm_type == '1':
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='時刻表'))
