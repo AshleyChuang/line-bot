@@ -49,7 +49,7 @@ def crawl_index_movie():
 def search_movie_id(text):
     for movie_id in movie_dict:
         if text in movie_dict[movie_id][0]:
-            return movie_dict[movie_id][0]
+            return movie_id
     return None
 
 def get_trailer_url(url):
