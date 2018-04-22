@@ -237,7 +237,8 @@ def handle_message(event):
                 type = 'template',
                 alt_text='Carousel template',
                 template=carousel_template)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=''.join(movie_days)))
+            text_message = TextSendMessage(text=''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]]))
+            line_bot_api.reply_message(event.reply_token, [text_message,carousel_template_message])
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies by keyword!'))
 
