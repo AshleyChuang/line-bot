@@ -143,15 +143,8 @@ def get_theater(keyword):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    global input_mode
-    print("input_mode:%d" % input_mode)
-    if input_mode == 0:
-        message = get_movie_by_keyword(event.message.text)
-        line_bot_api.reply_message(event.reply_token, message)
-    elif input_mode == 1:
-        input_mode = 0
-        message = get_theater(event.message.text)
-        line_bot_api.reply_message(event.reply_token, message)
+    message = get_movie_by_keyword(event.message.text)
+    line_bot_api.reply_message(event.reply_token, message)
 
 @handler.add(PostbackEvent)
 def handle_message(event):
@@ -190,8 +183,6 @@ def handle_message(event):
         for i in theaters:
             text.append('・'+i+'\n')
         text = ''.join(text)
-        print("input_mode:%d" % input_mode)
-        current_movie = movie_name
         line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
 
 crawl_index_movie()
