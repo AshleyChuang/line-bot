@@ -128,7 +128,7 @@ def get_movie_by_keyword(keyword):
         #URITemplateAction(type = 'uri',label='Check out the trailer', uri=movie_trailer)
         #PostbackTemplateAction(label='Movie Times', data='movie=%s&action=1'%movie_name),
     message = TemplateSendMessage(
-        type = 'template', alt_text='Buttons alt text',
+        type = 'template', alt_text='Check out more information of the movie!',
         template=buttons_template
         )
     return message
@@ -176,7 +176,7 @@ def handle_message(event):
             )
             message = TemplateSendMessage(
                 type='template',
-                alt_text='Confirm template',
+                alt_text='Confirmation',
                 template=confirm_template
             )
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=text),message])
@@ -188,6 +188,7 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
     elif action_type == '2':
         confirm_type = re.search('&confirm=(.*?)',event.postback.data).group(1)
+        print(event.postback.data)
         if confirm_type == '1':
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='時刻表'))
         else:
