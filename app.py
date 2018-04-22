@@ -143,12 +143,12 @@ def get_movie_by_keyword(keyword):
         uri_template = URITemplateAction(type = 'uri',label='Trailer', uri=movie_trailer)
     buttons_template = ButtonsTemplate(
         type='buttons', title=movie_name[0:40],
-        text='Please select!',
+        text='Check out more information of the movie!',
         thumbnail_image_url = movie_pic,
         actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1&'%movie_id),uri_template]
         )
     message = TemplateSendMessage(
-        type = 'template', alt_text='Check out more information of the movie!',
+        type = 'template', alt_text=movie_name,
         template=buttons_template
         )
     return message
