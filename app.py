@@ -93,7 +93,7 @@ def crawl_movie_time(movie_id, movie_theater):
         #dates.append(date)
         date = day.find("h4").text
         date = date.replace('年', '/').replace('月', '/').replace('日', '/',1)
-        print(date)
+        '''
         if '一' in date:
             date = date.replace('/ 星期一', '(Mon)')
         elif '二' in date:
@@ -108,7 +108,7 @@ def crawl_movie_time(movie_id, movie_theater):
             date = date.replace('/ 星期六', '(Sat)')
         elif '日' in date:
             date = date.replace('/ 星期日', '(Sun)')
-        print(date)
+        '''
         date2times.append(date)
         dates.append(date)
         sessions = day.find("ul", {"class": "bookList"}).find_all("li")
@@ -233,7 +233,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
         if date[0] == movie_date:
             time_sessions = date[1] # it's an array of show times for the movie in designated theater
             if len(time_sessions) == 0:
-                return TextSendMessage(text='Oops! All the shows @%s on %s are sold out now!' % (theater_name,movie_date))
+                return TextSendMessage(text='哎呀! 目前所有在%s %s的場次 都賣光了耶!' % (theater_name,movie_date))
             for session in time_sessions:
                 movie_time = session[0]
                 hour = int(movie_time.split(':')[0])
@@ -269,18 +269,18 @@ def handle_message(event):
         if len(theaters) == 1:
             # confirm template
             theater = next(iter(theaters))
-            text = '《%s》is now playing only in the following theater！\nDo you want to get the show times?' %(movie_name)
+            text = '《%s》目前只有在以下的威秀影城播岀喔！想要得到更詳細的場次嗎？' %(movie_name)
             confirm_template = ConfirmTemplate(
                 type = 'confirm', text= theaters[theater],
                 actions=[
                     PostbackTemplateAction(
                         type = 'postback',
-                        label='Yes', display_text='Yes',
+                        label='Yes',
                         data='movie=%s&action=2&confirm=1&theater=%s&' %(movie_id, theater)
                     ),
                     PostbackTemplateAction(
                         type = 'postback',
-                        label='No', display_text='No. I want to check out other movies.',
+                        label='No',
                         data='movie=%s&action=2&confirm=0&' %(movie_id)
                     )
                 ]
@@ -292,11 +292,27 @@ def handle_message(event):
             )
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=text),message])
         else:
-            text = ['《',movie_name,'》is playing in the following theaters. Select your theater!\n']
+            text = ['《',movie_name,'》目前有在以下的威秀影城播出喔！選擇您想要的影城吧～\n']
             for i in theaters:
                 text.append('・'+theaters[i]+'\n')
             text = ''.join(text)
-            line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
+            if len(theater) <=10:
+                col = []
+                for t in theaters:
+                    col.append(CarouselColumn(
+                        title=theaters[i], text='address',
+                        actions=[
+                            PostbackTemplateAction(
+                                label='Learn more',
+                                data='action=buy&itemid=1'
+                            )
+                        ]
+                    ))
+                carousel_template = CarouselTemplate(type='carousel', columns=col)
+                message = TemplateSendMessage(type='template',alt_text='Choose Theater',template=carousel_template)
+                line_bot_api.reply_message(event.reply_token,message)
+            else:
+                line_bot_api.reply_message(event.reply_token,TextSendMessage(text="more than 10 theaters"))
     elif action_type == '2':
         confirm_type = re.search('&confirm=(.+?)&',event.postback.data).group(1)
         if confirm_type == '1':
@@ -306,8 +322,8 @@ def handle_message(event):
             movie_days = movie_dict[movie_id][3][movie_theater] # [date_times,...]
             if len(movie_days) <= 0:
                 line_bot_api.reply_message(event.reply_token, [
-                TextSendMessage(text="Sorry! Can't find any movie times in the theater. Try another movie!"),
-                TextSendMessage(text='Search for other movies by keyword!')])
+                TextSendMessage(text="抱歉！找不到任何在這個影城的場次...試試看其他電影吧！"),#"Sorry! Can't find any movie times in the theater. Try another movie!"
+                TextSendMessage(text='可以用關鍵字來找其他的電影呦～')])
             else:
                 movie_days_col = []
                 description = ''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]])
@@ -318,9 +334,9 @@ def handle_message(event):
                 carousel_template_message = TemplateSendMessage(type = 'template',alt_text='Select Moive Dates',template=carousel_template)
                 line_bot_api.reply_message(event.reply_token, carousel_template_message)
         else:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies by keyword!'))
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='可以用關鍵字來找其他的電影呦～'))
     elif action_type == '3':
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='The movie xxx is now playing in the following theaters. Please Select Your Theater.'))
+        #line_bot_api.reply_message(event.reply_token, TextSendMessage(text='The movie xxx is now playing in the following theaters. Please Select Your Theater.'))
     elif action_type =='4':
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
