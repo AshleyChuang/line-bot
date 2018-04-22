@@ -215,11 +215,14 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
             for session in time_sessions:
                 movie_time = session[0]
                 hour = int(movie_time.split(':')[0])
-                if hour >= from_time and hour <= to_time:
+                print(hour, from_time, to_time)
+                print(session[1])
+                if hour >= from_time and hour < to_time:
                     col.append(CarouselColumn(
-                        title=movie_date+" "+movie_time, text=description[0:60],
+                        title=movie_time, text='test'',
                         actions=[
                             URITemplateAction(
+                                type='uri',
                                 label='Booking',
                                 uri=session[1]
                             )
