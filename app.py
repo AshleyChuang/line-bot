@@ -175,6 +175,40 @@ def handle_message(event):
     message = get_movie_by_keyword(event.message.text)
     line_bot_api.reply_message(event.reply_token, message)
 
+def generate_carousel_col(date_times, description, movie_id, movie_theater):
+    date = date_times[0]
+    times = date_times[1]
+    if len(times) <= 10:
+        col = CarouselColumn(
+                title=date, text=description[0:60],
+                actions=[
+                    PostbackTemplateAction(
+                        type='postback',label='Select Movie Time',
+                        data='movie=%d&action=4&' ##
+                    )
+                ]
+            )
+        return col
+    else:
+        col = CarouselColumn(
+                title=date, text=description[0:60],
+                actions=[
+                    PostbackTemplateAction(
+                        type='postback',label='上午時段',
+                        data='movie=%d&action=4&' ##
+                    ),
+                    PostbackTemplateAction(
+                        type='postback',label='下午時段',
+                        data='movie=%d&action=4&' ##
+                    ),
+                    PostbackTemplateAction(
+                        type='postback',label='晚間時段',
+                        data='movie=%d&action=4&' ##
+                    )
+                ]
+            )
+        return col
+
 @handler.add(PostbackEvent)
 def handle_message(event):
     movie_id = re.search('movie=(.+?)&',event.postback.data).group(1)
@@ -222,29 +256,19 @@ def handle_message(event):
         if confirm_type == '1':
             # 用carousel來分上午下午晚上
             movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
-            movie_days = crawl_movie_time(movie_id, movie_theater)
+            crawl_movie_time(movie_id, movie_theater)
             if len(movie_days) <= 0:
                 line_bot_api.reply_message(event.reply_token, [
                 TextSendMessage(text="Sorry! Can't find any movie times in the theater. Try another movie!"),
                 TextSendMessage(text='Search for other movies by keyword!')])
             movie_days_col = []
+            movie_days = movie_dict[movie_id][3][movie_theater] # [date_times,...]
             description = ''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]])
-            for i in movie_days:
-                col = CarouselColumn(
-                        title=i, text=description[0:60],
-                        actions=[
-                            PostbackTemplateAction(
-                                type='postback',label='上午',
-                                data='movie=%d&action=4&'
-                            )
-                        ]
-                    )
+            for date_times in movie_days:
+                col = generate_carousel_col(date_times, description, movie_id, movie_theater)
                 movie_days_col.append(col)
             carousel_template = CarouselTemplate(tyep='carousel', columns=movie_days_col)
-            carousel_template_message = TemplateSendMessage(
-                type = 'template',
-                alt_text='Moive Dates',
-                template=carousel_template)
+            carousel_template_message = TemplateSendMessage(type = 'template',alt_text='Moive Dates',template=carousel_template)
             line_bot_api.reply_message(event.reply_token, carousel_template_message)
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies by keyword!'))
