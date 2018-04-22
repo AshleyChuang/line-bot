@@ -146,6 +146,7 @@ def handle_message(event):
     message = get_movie_by_keyword(event.message.text)
     line_bot_api.reply_message(event.reply_token, message)
 
+
 @handler.add(PostbackEvent)
 def handle_message(event):
     movie_name = re.search('movie=(.*)&',event.postback.data).group(1)
@@ -159,25 +160,31 @@ def handle_message(event):
         # confirm template
         text = '這場電影只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？'
         print(next(iter(theaters)))
+        buttons_template = ButtonsTemplate(
+            type='buttons', title=movie_name[0:40],
+            text='Please select!',
+            thumbnail_image_url = movie_pic,
+            actions=[PostbackTemplateAction(label='Movie Time', data='movie=%s&action=1'%movie_name),uri_template]
+            )
+        confirm_template = ConfirmTemplate(
+            type = 'confirm', text= 'test',
+            actions=[
+                PostbackTemplateAction(
+                    type = 'postback',
+                    label='Yes', display_text='Yes',
+                    data='action=buy&itemid=1'
+                ),
+                PostbackTemplateAction(
+                    type = 'postback',
+                    label='No. I want to search for other movies', display_text='No. I want to search for other movies',
+                    data='action=buy&itemid=1'
+                )
+            ]
+        )
         message = TemplateSendMessage(
             type='template',
             alt_text='Confirm template',
-            template=ConfirmTemplate(
-                type = 'confirm',
-                text= 'test',
-                actions=[
-                    PostbackTemplateAction(
-                        type = 'postback',
-                        label='Yes', display_text='Yes',
-                        data='action=buy&itemid=1'
-                    ),
-                    PostbackTemplateAction(
-                        type = 'postback',
-                        label='No. I want to search for other movies', display_text='No. I want to search for other movies',
-                        data='action=buy&itemid=1'
-                    )
-                ]
-            )
+            template=buttons_template
         )
         line_bot_api.reply_message(event.reply_token, message) #TextSendMessage(text=text)
     else:
@@ -188,6 +195,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
 
 crawl_index_movie()
+
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
