@@ -175,13 +175,13 @@ def handle_message(event):
     message = get_movie_by_keyword(event.message.text)
     line_bot_api.reply_message(event.reply_token, message)
 
-def generate_carousel_col(date_times, movie_id, movie_theater):
+def generate_carousel_col(date_times,description, movie_id, movie_theater):
     date = date_times[0]
     times = date_times[1]
     print(len(date), len(times))
     if len(times) <= 10:
         col = CarouselColumn(
-                title=date,
+                title=date, text=description[0:60],
                 actions=[
                     PostbackTemplateAction(
                         type='postback',label='Movie Time',
@@ -192,7 +192,7 @@ def generate_carousel_col(date_times, movie_id, movie_theater):
         return col
     else:
         col = CarouselColumn(
-                title=date,
+                title=date,text=description[0:60],
                 actions=[
                     PostbackTemplateAction(
                         type='postback',label='上午時段',
@@ -267,11 +267,11 @@ def handle_message(event):
                 movie_days_col = []
                 description = ''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]])
                 for date_times in movie_days:
-                    col = generate_carousel_col(date_times, movie_id, movie_theater)
+                    col = generate_carousel_col(date_times, description, movie_id, movie_theater)
                     movie_days_col.append(col)
                 carousel_template = CarouselTemplate(tyep='carousel', columns=movie_days_col)
                 carousel_template_message = TemplateSendMessage(type = 'template',alt_text='Moive Dates',template=carousel_template)
-                line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=description),carousel_template_message])
+                line_bot_api.reply_message(event.reply_token, carousel_template_message)
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies by keyword!'))
     elif action_type =='4':
