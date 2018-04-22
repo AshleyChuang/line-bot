@@ -269,7 +269,7 @@ def handle_message(event):
         if len(theaters) == 1:
             # confirm template
             theater = next(iter(theaters))
-            text = '《%s》is now playing only in the following theater！\nDo you want to get show times in it(0x100036)' %(movie_name)
+            text = '《%s》is now playing only in the following theater！\nDo you want to get show times in it (0x100036)' %(movie_name)
             confirm_template = ConfirmTemplate(
                 type = 'confirm', text= theaters[theater],
                 actions=[
