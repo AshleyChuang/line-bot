@@ -81,6 +81,12 @@ line_bot_api = LineBotApi('bQu1j0/rJMgNGK++uQcD1Pu8zLcB/Gdp3kwwcwrP4Quj33AGyX1wZ
 # Channel Secret
 handler = WebhookHandler('756c8ca2e53d032ae70d8e1cb6624294')
 
+try:
+    line_bot_api.push_message('U84434259e4dcdd16ea11fd37a358b6e7', TextSendMessage(text='Hello World!'))
+except LineBotApiError as e:
+    abort(400)
+
+
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
