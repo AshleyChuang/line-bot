@@ -2,14 +2,13 @@ from flask import Flask, request, abort
 import requests
 from bs4 import BeautifulSoup
 import re
+from datetime import datetime
 
 vieshow_url = 'https://www.vscinemas.com.tw/'
 hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
 index_url = 'https://www.vscinemas.com.tw/film/index.aspx'
 coming_url = 'https://www.vscinemas.com.tw/film/coming.aspx'
 movie_dict = {} # movie info: 0->image, 1->start time, 2->detail_url, 3->{theaterList: movie time #}
-input_mode = 0 # 0->searching movie by name, 1->input desired movie theater
-current_movie = '' # desired movie's name
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -136,13 +135,8 @@ def get_theater(keyword):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print("input mode: %d, current_movie: %s"% (input_mode, current_movie))
-    if input_mode == 0:
-        message = get_movie_by_keyword(event.message.text)
-        line_bot_api.reply_message(event.reply_token, message)
-    elif input_mode == 1:
-        message = get_theater(event.message.text)
-    #print(response)
+    message = get_movie_by_keyword(event.message.text)
+    line_bot_api.reply_message(event.reply_token, message)
 
 @handler.add(PostbackEvent)
 def handle_message(event):
@@ -169,4 +163,5 @@ crawl_index_movie()
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
+    #crawl_index_movie()
     app.run(host='0.0.0.0', port=port)
