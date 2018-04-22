@@ -219,7 +219,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
                 print(session[1])
                 if hour >= from_time and hour < to_time:
                     col.append(CarouselColumn(
-                        title=movie_time, text='test'',
+                        title=movie_time, text='test',
                         actions=[
                             URITemplateAction(
                                 type='uri',
