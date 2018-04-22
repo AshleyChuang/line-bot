@@ -93,6 +93,7 @@ def crawl_movie_time(movie_id, movie_theater):
         #dates.append(date)
         date = day.find("h4").text
         date = date.replace('年', '/').replace('月', '/').replace('日', '/',1)
+        print(date)
         if '星期一' in date:
             date.replace('星期一', '(Mon)')
         elif '星期二' in date:
@@ -107,6 +108,7 @@ def crawl_movie_time(movie_id, movie_theater):
             date.replace('星期六', '(Sat)')
         elif '星期日' in date:
             date.replace('星期日', '(Sun)')
+        print(date)
         date2times.append(date)
         dates.append(date)
         sessions = day.find("ul", {"class": "bookList"}).find_all("li")
