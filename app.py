@@ -222,9 +222,10 @@ def handle_message(event):
                 TextSendMessage(text="Sorry! Can't find any movie times in the theater. Try another movie!"),
                 TextSendMessage(text='Search for other movies by keyword!')])
             movie_days_col = []
+            description = ''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]])
             for i in movie_days:
                 col = CarouselColumn(
-                        title=i, text='description1',
+                        title=i, text=description[0:60],
                         actions=[
                             PostbackTemplateAction(
                                 type='postback',label='上午',
@@ -238,9 +239,7 @@ def handle_message(event):
                 type = 'template',
                 alt_text='Moive Dates',
                 template=carousel_template)
-            print(''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]]))
-            text_message = TextSendMessage(text=''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]]))
-            line_bot_api.reply_message(event.reply_token, [text_message,carousel_template_message])
+            line_bot_api.reply_message(event.reply_token, carousel_template_message)
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies by keyword!'))
 
