@@ -177,7 +177,7 @@ def handle_message(event):
                 ]
             )
         )
-        line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
+        line_bot_api.reply_message(event.reply_token,[TextSendMessage(text=text), message])
     else:
         text = ['這個電影在這些影城都有喔～想要在哪一個影城看呀？\n']
         for i in theaters:
