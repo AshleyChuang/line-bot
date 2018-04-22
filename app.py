@@ -207,15 +207,15 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
                 title=date,text=description[0:60],
                 actions=[
                     PostbackTemplateAction(
-                        type='postback',label='上午時段',
+                        type='postback',label='Morning Session',
                         data='movie=%s&action=4&theater=%s&date=%s&slot=1&' %(movie_id, movie_theater, date)
                     ),
                     PostbackTemplateAction(
-                        type='postback',label='下午時段',
+                        type='postback',label='Afternoon Session',
                         data='movie=%s&action=4&theater=%s&date=%s&slot=2&' %(movie_id, movie_theater, date)
                     ),
                     PostbackTemplateAction(
-                        type='postback',label='晚間時段',
+                        type='postback',label='Evening Session',
                         data='movie=%s&action=4&theater=%s&date=%s&slot=3&' %(movie_id, movie_theater, date)
                     )
                 ]
@@ -233,7 +233,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
         if date[0] == movie_date:
             time_sessions = date[1] # it's an array of show times for the movie in designated theater
             if len(time_sessions) == 0:
-                return TextSendMessage(text='Oops! All the shows on %s are sold out @%s!' % (movie_date,theater_name))
+                return TextSendMessage(text='Oops! All the shows @%s on %s are sold out now!(0x10007C)' % (theater_name,movie_date))
             for session in time_sessions:
                 movie_time = session[0]
                 hour = int(movie_time.split(':')[0])
@@ -269,7 +269,7 @@ def handle_message(event):
         if len(theaters) == 1:
             # confirm template
             theater = next(iter(theaters))
-            text = '《%s》目前只有在這個影城播出喔！\n想要查詢更詳細的時刻表嗎？' %(movie_name)
+            text = '《%s》is now playing only in the following theater！\nDo you want to get show times in it(0x100036)' %(movie_name)
             confirm_template = ConfirmTemplate(
                 type = 'confirm', text= theaters[theater],
                 actions=[
@@ -292,7 +292,7 @@ def handle_message(event):
             )
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=text),message])
         else:
-            text = ['《',movie_name,'》在這些影城都有喔～想要在哪一個影城看呀？\n']
+            text = ['《',movie_name,'》is playing in the following theaters. Select your theater!\n']
             for i in theaters:
                 text.append('・'+theaters[i]+'\n')
             text = ''.join(text)
