@@ -99,7 +99,8 @@ def crawl_movie_time(movie_id, movie_theater):
         sessions = day.find("ul", {"class": "bookList"}).find_all("li")
         timesessions = []
         for sess in sessions:
-            time = sess.find('a').text
+            time_session = sess.find('a')
+            time = time_session.text
             if "soldout" in sess.attrs['class']:
                 continue
             booking_url = time_session['href']
