@@ -214,6 +214,8 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
         print("date:",date)
         if date[0] == movie_date:
             time_sessions = date[1] # it's an array of show times for the movie in designated theater
+            if len(time_sessions) == 0:
+                return TextSendMessage(text='Oops! All the shows on this day are sold out!')
             for session in time_sessions:
                 movie_time = session[0]
                 hour = int(movie_time.split(':')[0])
