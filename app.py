@@ -296,7 +296,7 @@ def handle_message(event):
             for i in theaters:
                 text.append('・'+theaters[i]+'\n')
             text = ''.join(text)
-            if len(theater) <=10:
+            if len(theaters) <=10:
                 col = []
                 for t in theaters:
                     col.append(CarouselColumn(
