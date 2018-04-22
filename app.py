@@ -283,10 +283,13 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='test'))
         elif time_slot == '1':
             # only in morning
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='test1'))
         elif time_slot == '2':
             # only in afternoon
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='test2'))
         elif time_slot == '3':
             # only in night
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='test3'))
 
 crawl_index_movie()
 
