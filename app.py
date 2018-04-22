@@ -92,6 +92,21 @@ def crawl_movie_time(movie_id, movie_theater):
         date2times = []
         #dates.append(date)
         date = day.find("h4").text
+        date = date.replace('年', '/').replace('月', '/').replace('日', '/',1)
+        if '星期一' in date:
+            date.replace('星期一', '(Mon)')
+        elif '星期二' in date:
+            date.replace('星期一', '(Tue)')
+        elif '星期三' in date:
+            date.replace('星期三', '(Wed)')
+        elif '星期四' in date:
+            date.replace('星期四', '(Thu)')
+        elif '星期五' in date:
+            date.replace('星期五', '(Fri)')
+        elif '星期六' in date:
+            date.replace('星期六', '(Sat)')
+        elif '星期日' in date:
+            date.replace('星期日', '(Sun)')
         date2times.append(date)
         dates.append(date)
         sessions = day.find("ul", {"class": "bookList"}).find_all("li")
@@ -207,15 +222,16 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
 
 def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_time):
     date_times = movie_dict[movie_id][3][movie_theater]
+    theater_name = movie_dict[movie_id][2][movie_theater]]
     col = []
-    description = ''.join(['《',movie_dict[movie_id][0], '》@', movie_dict[movie_id][2][movie_theater]])
+    description = ''.join(['《',movie_dict[movie_id][0], '》@', theater_name)
     print("movie date:", movie_date)
     for date in date_times:
         print("date:",date)
         if date[0] == movie_date:
             time_sessions = date[1] # it's an array of show times for the movie in designated theater
             if len(time_sessions) == 0:
-                return TextSendMessage(text='Oops! All the shows on this day are sold out!')
+                return TextSendMessage(text='Oops! All the shows on %s are sold out @%s!' % (movie_date,theater_name))
             for session in time_sessions:
                 movie_time = session[0]
                 hour = int(movie_time.split(':')[0])
