@@ -144,6 +144,7 @@ def get_theater(keyword):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    global input_mode
     print("input_mode:%d" % input_mode)
     if input_mode == 0:
         message = get_movie_by_keyword(event.message.text)
