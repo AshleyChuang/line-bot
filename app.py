@@ -188,7 +188,7 @@ def handle_message(event):
             line_bot_api.reply_message(event.reply_token,TextSendMessage(text=text))
     elif action_type == '2':
         confirm_type = re.search('&confirm=(.*?)',event.postback.data).group(1)
-        if confirm_type == 1:
+        if confirm_type == '1':
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='時刻表'))
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Search for other movies!'))
