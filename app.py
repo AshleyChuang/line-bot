@@ -184,7 +184,7 @@ def handle_message(event):
         message = TemplateSendMessage(
             type='template',
             alt_text='Confirm template',
-            template=buttons_template
+            template=confirm_template
         )
         line_bot_api.reply_message(event.reply_token, message) #TextSendMessage(text=text)
     else:
