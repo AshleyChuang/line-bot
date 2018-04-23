@@ -211,9 +211,11 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
     if len(times) <= 10:
         actions_arr = []
         if len(times) <= 3:
+            print("場次<=3")
             for t in times:
                 actions_arr.append(URITemplateAction(type = 'uri',label=t[0], uri=t[1]))
         else:
+            print("場次>3, <=10")
             actions_arr.append(URITemplateAction(type = 'uri',label=times[0][0]+"->Booking", uri=times[0][1]))
             actions_arr.append(URITemplateAction(type = 'uri',label=times[1][0]+"->Booking", uri=times[1][1]))
             actions_arr.append(PostbackTemplateAction(
@@ -281,17 +283,17 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
 def get_theater_carousel(movie_id, theaters, area):
     col = []
     for t in theaters:
-        address = ''
+        theater_img_add = []
         if area == -1:
             for i in range(0,len(theater_info)):
                 if theaters[t] in theater_info[i]:
-                    address = theater_info[i][theaters[t]][1]
+                    theater_img_add = theater_info[i][theaters[t]]
                     break
         else:
-            address = theater_info[area][theaters[t]][1]
-        print("address: ", address)
+            theater_img_add = theater_info[area][theaters[t]]
         col.append(CarouselColumn(
-            title=theaters[t], text=address,
+            title=theaters[t], text=theater_img_add[1],
+            thumbnailImageUrl=theater_img_add[0],
             actions=[
                 PostbackTemplateAction(
                     label='Learn more',
