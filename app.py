@@ -277,6 +277,19 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
     message = TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
     return message
 
+def get_theater_carousel(movie_id, theaters, area):
+    for t in theaters:
+        col.append(CarouselColumn(
+            title=theaters[t], text='address',
+            actions=[
+                PostbackTemplateAction(
+                    label='Learn more',
+                    data='movie=%s&action=2&confirm=1&theater=%s&'%(movie_id, t)
+                )
+            ]
+        ))
+    return CarouselTemplate(type='carousel', columns=col)
+
 
 @handler.add(PostbackEvent)
 def handle_message(event):
@@ -316,18 +329,7 @@ def handle_message(event):
         else:
             text_message = ['《',movie_name,'》目前有在以下的威秀影城播出喔！選擇您想要的影城吧～\n']
             if len(theaters) <=10:
-                col = []
-                for t in theaters:
-                    col.append(CarouselColumn(
-                        title=theaters[t], text='address',
-                        actions=[
-                            PostbackTemplateAction(
-                                label='Learn more',
-                                data='movie=%s&action=2&confirm=1&theater=%s&'%(movie_id, t)
-                            )
-                        ]
-                    ))
-                carousel_template = CarouselTemplate(type='carousel', columns=col)
+                carousel_template = get_theater_carousel(movie_id, theaters, -1)
                 message = TemplateSendMessage(type='template',alt_text='Choose Theater',template=carousel_template)
                 line_bot_api.reply_message(event.reply_token,[TextSendMessage(text=''.join(text_message)),message])
             else:
