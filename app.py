@@ -13,6 +13,7 @@ theater_url = 'https://www.vscinemas.com.tw/theater/index.aspx'
 movie_dict = {}
 # movie info by movie id: 0->movie name, 1->image, 2->{theater_id:theater_name}, 3->{theater_id: [ dates "[date, [tuple(time, url)] ]" ]}
 theater_info = [] # [{北區}, {竹苗}, {中區}, {南區}]
+hot_movie_list = []
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -48,6 +49,17 @@ def crawl_index_movie():
             movie_dict[movie_id] = info
         next_page_url = index_url + p['href']
         soup = BeautifulSoup(requests.get(next_page_url).text, 'html.parser')
+
+def crawl_hot_movie():
+    r = requests.get(hot_url)
+    content = r.text
+    soup = BeautifulSoup(content, 'html.parser')
+    rank1_id = re.search('id=(.*)',soup.find('section',class_='hotArea').find('a', href=True)['href']).group(1)
+    hot_movie_list.append(rank1_id)
+    others = soup.find(class_='hotList').find_all('li')
+    for movie in others:
+        id = re.search('id=(.*)', movie.find('a')['href']).group(1)
+        hot_movie_list.append(id)
 
 def search_movie_id(text):
     for movie_id in movie_dict:
@@ -176,8 +188,7 @@ def callback():
 
     return 'OK'
 
-def get_movie_by_keyword(keyword):
-    movie_id = search_movie_id(keyword)
+def get_movie_template(movie_id):
     if movie_id is None:
         return TextSendMessage(text="沒有這個電影耶～查查看別的吧！")
     movie_name = movie_dict[movie_id][0]
@@ -200,10 +211,28 @@ def get_movie_by_keyword(keyword):
         )
     return message
 
+def get get_hot_movie_list():
+    col = []
+    for movie_id in hot_movie_list:
+        col.append(ImageCarouselColumn(
+                        image_url=movie_dict[movie_id][1],
+                        action=PostbackTemplateAction(
+                            label='postback1',
+                            data='action=buy&itemid=1'
+                        )
+                    ))
+    imagecarousel = ImageCarouselTemplate(column=col)
+    message = TemplateSendMessage(type='template', alt_text='Hot Movie List', template=imagecarousel)
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    message = get_movie_by_keyword(event.message.text)
-    line_bot_api.reply_message(event.reply_token, message)
+    if '推薦' in event.message.text or '好看' in event.message.text or '熱門' in event.message.text or 'recommend' in event.message.text:
+        message = get_hot_movie_list();
+        line_bot_api.reply_message(reply_token, message)
+    else:
+        movie_id = search_movie_id(event.message.text)
+        message = get_movie_template(movie_id)
+        line_bot_api.reply_message(event.reply_token, message)
 
 def generate_carousel_col(date_times,description, movie_id, movie_theater):
     date = date_times[0]
@@ -391,8 +420,10 @@ def handle_message(event):
         time_slot = re.search('&slot=(.+?)&',event.postback.data).group(1)
         message = get_movie_times_message(movie_id, movie_theater, movie_date, time_slot)
         line_bot_api.reply_message(event.reply_token, message)
+
 crawl_index_movie()
 crawl_theater_info()
+crawl_hot_movie()
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
