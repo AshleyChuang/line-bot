@@ -284,10 +284,10 @@ def get_theater_carousel(movie_id, theaters, area):
         if area == -1:
             for i in range(0,len(theater_info)):
                 if theaters[t] in theater_info[i]:
-                    address = theater_info[i][theater[t]][1]
+                    address = theater_info[i][theaters[t]][1]
                     break
         else:
-            address = theater_info[area][theater[t]][1]
+            address = theater_info[area][theaters[t]][1]
         print("address: ", address)
         col.append(CarouselColumn(
             title=theaters[t], text=address,
