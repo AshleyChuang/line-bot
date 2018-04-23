@@ -227,14 +227,12 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
         )
     return col
 
-def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_time):
+def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_time, time_slot):
     date_times = movie_dict[movie_id][3][movie_theater]
     theater_name = movie_dict[movie_id][2][movie_theater]
     col = []
     description = ''.join(['《',movie_dict[movie_id][0], '》@', theater_name])
-    print("movie date:", movie_date)
     for date in date_times:
-        print("date:",date)
         if date[0] == movie_date:
             time_sessions = date[1] # it's an array of show times for the movie in designated theater
             if len(time_sessions) == 0:
@@ -244,7 +242,17 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
                 hour = int(movie_time.split(':')[0])
                 print(hour, from_time, to_time)
                 print(session[1])
-                if hour >= from_time and hour < to_time:
+                in_session = 0
+                if time_slot == '1': # morning session
+                    if hour >= 8 and hour < 12:
+                        in_session = 1
+                elif time_slot =='2': # afternoon session
+                    if hour >= 12 and hour < 18:
+                        in_session = 1
+                if time_slot == '3': # evening session
+                    if hour >= 18 or hour <8:
+                        in_session = 1
+                if in_session == 1:
                     col.append(CarouselColumn(
                         title=movie_date+' '+movie_time, text=description[0:60],
                         actions=[
@@ -373,10 +381,7 @@ def handle_message(event):
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
         time_slot = re.search('&slot=(.+?)&',event.postback.data).group(1)
-        if time_slot == '0':
-            # display all the times
-            message = get_movie_times_message(movie_id, movie_theater, movie_date, 0, 24)
-        elif time_slot == '1':
+        if time_slot == '1':
             # only in morning
             message = get_movie_times_message(movie_id, movie_theater, movie_date, 4, 12)
         elif time_slot == '2':
