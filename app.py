@@ -217,13 +217,13 @@ def get_hot_movie_list():
         col.append(ImageCarouselColumn(
                         image_url=movie_dict[movie_id][1],
                         action=PostbackTemplateAction(
-                            label='postback1',
-                            data='action=buy&itemid=1'
+                            label='Learn More',
+                            data='movie=%s&action=3' % (movie_id)
                         )
                     ))
     imagecarousel = ImageCarouselTemplate(type='image_carousel',columns=col)
     message = TemplateSendMessage(type='template', alt_text='Hot Movie List', template=imagecarousel)
-    return message
+    return [TextSendMessage(text='這是本週熱門電影喔！可以參考看看～'),message]
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -414,7 +414,8 @@ def handle_message(event):
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='可以用關鍵字來找其他的電影呦～'))
     elif action_type == '3':
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='The movie xxx is now playing in the following theaters. Please Select Your Theater.'))
+        # display movie info from hot movie List
+        line_bot_api.reply_message(event.reply_token, get_movie_template(movie_id))
     elif action_type =='4':
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
