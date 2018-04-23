@@ -213,7 +213,7 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
         if len(times) <= 3:
             print("場次<=3")
             for t in times:
-                print("label: ", t[0], " uri: ", url)
+                print("label: ", t[0], " uri: ", t[1])
                 actions_arr.append(URITemplateAction(type = 'uri',label=t[0], uri=t[1]))
         else:
             print("場次>3, <=10")
@@ -292,6 +292,7 @@ def get_theater_carousel(movie_id, theaters, area):
                     break
         else:
             theater_img_add = theater_info[area][theaters[t]]
+        print(theater_img_add[0])
         col.append(CarouselColumn(
             title=theaters[t], text=theater_img_add[1],
             thumbnailImageUrl=theater_img_add[0],
