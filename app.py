@@ -227,7 +227,7 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
         )
     return col
 
-def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_time, time_slot):
+def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
     date_times = movie_dict[movie_id][3][movie_theater]
     theater_name = movie_dict[movie_id][2][movie_theater]
     col = []
@@ -240,8 +240,6 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
             for session in time_sessions:
                 movie_time = session[0]
                 hour = int(movie_time.split(':')[0])
-                print(hour, from_time, to_time)
-                print(session[1])
                 in_session = 0
                 if time_slot == '1': # morning session
                     if hour >= 8 and hour < 12:
@@ -249,7 +247,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
                 elif time_slot =='2': # afternoon session
                     if hour >= 12 and hour < 18:
                         in_session = 1
-                if time_slot == '3': # evening session
+                elif time_slot == '3': # evening session
                     if hour >= 18 or hour <8:
                         in_session = 1
                 if in_session == 1:
@@ -381,15 +379,7 @@ def handle_message(event):
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
         time_slot = re.search('&slot=(.+?)&',event.postback.data).group(1)
-        if time_slot == '1':
-            # only in morning
-            message = get_movie_times_message(movie_id, movie_theater, movie_date, 4, 12)
-        elif time_slot == '2':
-            # only in afternoon
-            message = get_movie_times_message(movie_id, movie_theater, movie_date, 12, 18)
-        elif time_slot == '3':
-            # only in night
-            message = get_movie_times_message(movie_id, movie_theater, movie_date, 18, 4)
+        message = get_movie_times_message(movie_id, movie_theater, movie_date, time_slot)
         line_bot_api.reply_message(event.reply_token, message)
 crawl_index_movie()
 crawl_theater_info()
