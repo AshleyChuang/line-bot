@@ -280,8 +280,17 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
 def get_theater_carousel(movie_id, theaters, area):
     col = []
     for t in theaters:
+        address = ''
+        if area == -1:
+            for i in range(0,len(theater_info)):
+                if theaters[t] in theater_info[i]:
+                    address = theater_info[i][theater[t]][1]
+                    break
+        else:
+            address = theater_info[area][theater[t]][1]
+        print("address: ", address)
         col.append(CarouselColumn(
-            title=theaters[t], text=next(iter(theater_info[theaters[t]].values()))[0],
+            title=theaters[t], text=address,
             actions=[
                 PostbackTemplateAction(
                     label='Learn more',
