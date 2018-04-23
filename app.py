@@ -292,7 +292,7 @@ def get_theater_carousel(movie_id, theaters, area):
         print(theater_img_add[0])
         col.append(CarouselColumn(
             title=theaters[t], text=theater_img_add[1],
-            thumbnailImageUrl=theater_img_add[0],
+            thumbnailImageUrl='https://www.vscinemas.com.tw/upload/film/film_20180331025.jpg',
             actions=[
                 PostbackTemplateAction(
                     label='Learn more',
