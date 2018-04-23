@@ -213,7 +213,7 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
         if len(times) <= 3:
             print("場次<=3")
             for t in times:
-                actions_arr.append(URITemplateAction(type = 'uri',label=t[0], uri=t[1]))
+                actions_arr.append(URITemplateAction(type = 'uri',label='hi', uri='https://www.google.com.tw/#gws_rd=ssl'))
         else:
             print("場次>3, <=10")
             actions_arr.append(URITemplateAction(type = 'uri',label=times[0][0]+"->Booking", uri=times[0][1]))
