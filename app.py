@@ -430,14 +430,7 @@ def handle_message(event):
     elif action_type == '3':
         # display theaters by area
         area = re.search('&area=(.+?)&',event.postback.data).group(1)
-        if area == '1': # 北區
-
-            pass
-        elif area == '2':
-            pass
-        elif area == '3':
-            pass
-        else:
+        
     elif action_type =='4':
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
