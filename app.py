@@ -228,6 +228,10 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
     return col
 
 def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
+    if len(movie_dict[movie_id][3]) == 0:
+        crawl_theater(movie_id)
+    if len(movie_dict[movie_id][2]) == 0:
+        crawl_movie_time(movie_id, movie_theater)
     date_times = movie_dict[movie_id][3][movie_theater]
     theater_name = movie_dict[movie_id][2][movie_theater]
     col = []
