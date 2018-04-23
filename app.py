@@ -208,6 +208,11 @@ def handle_message(event):
 def generate_carousel_col(date_times,description, movie_id, movie_theater):
     date = date_times[0]
     times = date_times[1]
+    print("date:", len(date))
+    return CarouselColumn(title="test",text='description[0:60]',actions=[PostbackTemplateAction(
+        type='postback',label='Get Show Times and Book',
+        data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
+    )])
     if len(times) <= 10:
         print("hey")
         col = CarouselColumn(title=date, text=description[0:60],
