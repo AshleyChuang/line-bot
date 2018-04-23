@@ -213,9 +213,7 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
         if len(times) <= 3:
             print("場次<=3")
             for t in times:
-                print("label: ", t[0], " uri: ", t[1])
-                test_text = "hi"
-                actions_arr.append(URITemplateAction(type = 'uri',label=test_text, uri=t[1]))
+                actions_arr.append(URITemplateAction(type = 'uri',label=t[0], uri=t[1]))
         else:
             print("場次>3, <=10")
             actions_arr.append(URITemplateAction(type = 'uri',label=times[0][0]+"->Booking", uri=times[0][1]))
@@ -224,7 +222,12 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
                 type='postback',label='Get More Show Times',
                 data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
             ))
-        col = CarouselColumn(
+        if len(action_arr) == 1:
+            col = CarouselColumn(
+                    title=date, text=description[0:60],
+                    actions=actions_arr[0])
+        else:
+            col = CarouselColumn(
                 title=date, text=description[0:60],
                 actions=actions_arr)
         return col
@@ -285,7 +288,6 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
 def get_theater_carousel(movie_id, theaters, area):
     col = []
     for t in theaters:
-        theater_img_add = []
         if area == -1:
             for i in range(0,len(theater_info)):
                 if theaters[t] in theater_info[i]:
