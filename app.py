@@ -334,7 +334,7 @@ def handle_message(event):
                 buttons_template = ButtonsTemplate(
                     type='buttons', title="威秀影城據點",
                     text='請選擇影城區域',
-                    thumbnail_image_url = next(iter(theater_info)),
+                    thumbnail_image_url = next(iter(theater_info[0].values()))[0],
                     actions=[
                         PostbackTemplateAction(label='北區', data='movie=%s&action=3&'%movie_id),
                         PostbackTemplateAction(label='竹苗', data='movie=%s&action=3&'%movie_id),
