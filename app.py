@@ -218,7 +218,7 @@ def get_hot_movie_list():
                         image_url=movie_dict[movie_id][1],
                         action=PostbackTemplateAction(
                             label='Learn More',
-                            data='movie=%s&action=3' % (movie_id)
+                            data='movie=%s&action=3&' % (movie_id)
                         )
                     ))
     imagecarousel = ImageCarouselTemplate(type='image_carousel',columns=col)
