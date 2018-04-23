@@ -222,12 +222,8 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
                 type='postback',label='Get More Show Times',
                 data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
             ))
-        if len(actions_arr) == 1:
-            col = CarouselColumn(
-                    title=date, text=description[0:60],
-                    actions=actions_arr[0])
-        else:
-            col = CarouselColumn(
+        print("length of actions_arr:",len(actions_arr))
+        col = CarouselColumn(
                 title=date, text=description[0:60],
                 actions=actions_arr)
         return col
