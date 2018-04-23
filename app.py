@@ -221,7 +221,7 @@ def get_hot_movie_list():
                             data='action=buy&itemid=1'
                         )
                     ))
-    imagecarousel = ImageCarouselTemplate(column=col)
+    imagecarousel = ImageCarouselTemplate(type='image_carousel',columns=col)
     message = TemplateSendMessage(type='template', alt_text='Hot Movie List', template=imagecarousel)
     return message
 
