@@ -211,7 +211,7 @@ def get_movie_template(movie_id):
         )
     return message
 
-def get get_hot_movie_list():
+def get_hot_movie_list():
     col = []
     for movie_id in hot_movie_list:
         col.append(ImageCarouselColumn(
@@ -223,7 +223,8 @@ def get get_hot_movie_list():
                     ))
     imagecarousel = ImageCarouselTemplate(column=col)
     message = TemplateSendMessage(type='template', alt_text='Hot Movie List', template=imagecarousel)
-
+    return message
+    
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     if '推薦' in event.message.text or '好看' in event.message.text or '熱門' in event.message.text or 'recommend' in event.message.text:
