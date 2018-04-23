@@ -224,12 +224,12 @@ def get_hot_movie_list():
     imagecarousel = ImageCarouselTemplate(column=col)
     message = TemplateSendMessage(type='template', alt_text='Hot Movie List', template=imagecarousel)
     return message
-    
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     if '推薦' in event.message.text or '好看' in event.message.text or '熱門' in event.message.text or 'recommend' in event.message.text:
         message = get_hot_movie_list();
-        line_bot_api.reply_message(reply_token, message)
+        line_bot_api.reply_message(event.reply_token, message)
     else:
         movie_id = search_movie_id(event.message.text)
         message = get_movie_template(movie_id)
@@ -324,7 +324,7 @@ def get_theater_carousel(movie_id, theaters, area):
             thumbnail_image_url=theater_img_add[0],
             actions=[
                 PostbackTemplateAction(
-                    label='Learn more',
+                    label='Get Show Times',
                     data='movie=%s&action=2&confirm=1&theater=%s&'%(movie_id, t)
                 )
             ]
