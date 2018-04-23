@@ -9,8 +9,10 @@ hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
 index_url = 'https://www.vscinemas.com.tw/film/index.aspx'
 detail_url_by_id = 'https://www.vscinemas.com.tw/film/detail.aspx?id='
 coming_url = 'https://www.vscinemas.com.tw/film/coming.aspx'
+theater_url = 'https://www.vscinemas.com.tw/theater/index.aspx'
 movie_dict = {}
 # movie info by movie id: 0->movie name, 1->image, 2->{theater_id:theater_name}, 3->{theater_id: [ dates "[date, [tuple(time, url)] ]" ]}
+theater_info = [] # [{北區}, {竹苗}, {中區}, {南區}]
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -125,6 +127,21 @@ def crawl_movie_time(movie_id, movie_theater):
     movie_dict[movie_id][3][movie_theater] = all_times_in_theaters
     return dates
 
+def crawl_theater_info():
+    r = requests.get(theater_url)
+    content = r.text
+    soup = BeautifulSoup(content, 'html.parser')
+    areaList = soup.find_all('ul', class_='theaterInfoList')
+    for area in areaList:
+        theaters = area.find_all('li')
+        theaters_in_area = {}
+        for t in theaters:
+            img = t.find('img')['src'].replace('../', vieshow_url)
+            name = t.find('h2').find('a').text
+            address = t.find('p').text
+            theaters_in_area[name] = [img, address]
+        theater_info.append(theaters_in_area)
+
 ############
 app = Flask(__name__)
 
@@ -197,8 +214,8 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
             for t in times:
                 actions_arr.append(URITemplateAction(type = 'uri',label=t[0], uri=t[1]))
         else:
-            actions_arr.append(URITemplateAction(type = 'uri',label=times[0][0]+" Booking", uri=times[0][1]))
-            actions_arr.append(URITemplateAction(type = 'uri',label=times[1][0]+" Booking", uri=times[1][1]))
+            actions_arr.append(URITemplateAction(type = 'uri',label=times[0][0]+"->Booking", uri=times[0][1]))
+            actions_arr.append(URITemplateAction(type = 'uri',label=times[1][0]+"->Booking", uri=times[1][1]))
             actions_arr.append(PostbackTemplateAction(
                 type='postback',label='Get More Show Times',
                 data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
@@ -314,7 +331,21 @@ def handle_message(event):
                 message = TemplateSendMessage(type='template',alt_text='Choose Theater',template=carousel_template)
                 line_bot_api.reply_message(event.reply_token,[TextSendMessage(text=''.join(text_message)),message])
             else:
-                line_bot_api.reply_message(event.reply_token,TextSendMessage(text="more than 10 theaters"))
+                buttons_template = ButtonsTemplate(
+                    type='buttons', title="威秀影城據點",
+                    text='請選擇影城區域',
+                    thumbnail_image_url = next(iter(theater_info)),
+                    actions=[
+                        PostbackTemplateAction(label='北區', data='movie=%s&action=3&'%movie_id),
+                        PostbackTemplateAction(label='竹苗', data='movie=%s&action=3&'%movie_id),
+                        PostbackTemplateAction(label='中區', data='movie=%s&action=3&'%movie_id),
+                        PostbackTemplateAction(label='南區', data='movie=%s&action=3&'%movie_id)]
+                    )
+                message = TemplateSendMessage(
+                    type = 'template', alt_text=movie_name+"影城據點",
+                    template=buttons_template
+                    )
+                line_bot_api.reply_message(event.reply_token,message)
     elif action_type == '2':
         confirm_type = re.search('&confirm=(.+?)&',event.postback.data).group(1)
         if confirm_type == '1':
@@ -357,7 +388,7 @@ def handle_message(event):
             message = get_movie_times_message(movie_id, movie_theater, movie_date, 18, 4)
         line_bot_api.reply_message(event.reply_token, message)
 crawl_index_movie()
-
+crawl_theater_info()
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
