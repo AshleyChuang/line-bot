@@ -218,7 +218,7 @@ def get_hot_movie_list():
                         image_url=movie_dict[movie_id][1],
                         action=PostbackTemplateAction(
                             label='Learn More',
-                            data='movie=%s&action=3&' % (movie_id)
+                            data='movie=%s&action=5&' % (movie_id)
                         )
                     ))
     imagecarousel = ImageCarouselTemplate(type='image_carousel',columns=col)
@@ -309,9 +309,11 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
         carousel_template =CarouselTemplate(type='carousel', columns=col)
         return TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
 
-def get_theater_carousel(movie_id, theaters, area):
+def get_theater_carousel(movie_id, theaters, movie_name):
+    text_message = ['《',movie_name,'》目前有在以下的威秀影城播出喔！選擇您想要的影城吧～\n']
     col = []
     for t in theaters:
+        '''
         if area == -1:
             for i in range(0,len(theater_info)):
                 if theaters[t] in theater_info[i]:
@@ -319,6 +321,11 @@ def get_theater_carousel(movie_id, theaters, area):
                     break
         else:
             theater_img_add = theater_info[area][theaters[t]]
+        '''
+        for i in range(0,len(theater_info)):
+            if theaters[t] in theater_info[i]:
+                theater_img_add = theater_info[i][theaters[t]]
+                break
         col.append(CarouselColumn(
             title=theaters[t], text=theater_img_add[1],
             thumbnail_image_url=theater_img_add[0],
@@ -329,7 +336,13 @@ def get_theater_carousel(movie_id, theaters, area):
                 )
             ]
         ))
-    return CarouselTemplate(type='carousel', columns=col)
+    if len(col) <=10:
+        carousel_temp = CarouselTemplate(type='carousel', columns=col)
+        return [TextSendMessage(text=''.join(text_message)),TemplateSendMessage(type='template',alt_text='Choose Theater',template=carousel_temp)]
+    else :
+        temp1 = TemplateSendMessage(type='template',alt_text='Choose Theater',template=CarouselTemplate(type='carousel', columns=col[:10]))
+        temp2 = TemplateSendMessage(type='template',alt_text='Choose Theater',template=CarouselTemplate(type='carousel', columns=col[10:]))
+    return [TextSendMessage(text=''.join(text_message)),temp1, temp2]
 
 
 @handler.add(PostbackEvent)
@@ -368,27 +381,28 @@ def handle_message(event):
             )
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=text),message])
         else:
-            text_message = ['《',movie_name,'》目前有在以下的威秀影城播出喔！選擇您想要的影城吧～\n']
             if len(theaters) <=10:
-                carousel_template = get_theater_carousel(movie_id, theaters, -1)
-                message = TemplateSendMessage(type='template',alt_text='Choose Theater',template=carousel_template)
-                line_bot_api.reply_message(event.reply_token,[TextSendMessage(text=''.join(text_message)),message])
+                message = get_theater_carousel(movie_id, theaters, movie_name)
+                line_bot_api.reply_message(event.reply_token, message)
             else:
+                '''
                 buttons_template = ButtonsTemplate(
-                    type='buttons', title="威秀影城據點",
+                    type='buttons', title=movie_name"威秀影城據點",
                     text='請選擇影城區域',
                     thumbnail_image_url = next(iter(theater_info[0].values()))[0],
                     actions=[
-                        PostbackTemplateAction(label='北區', data='movie=%s&action=3&'%movie_id),
-                        PostbackTemplateAction(label='竹苗', data='movie=%s&action=3&'%movie_id),
-                        PostbackTemplateAction(label='中區', data='movie=%s&action=3&'%movie_id),
-                        PostbackTemplateAction(label='南區', data='movie=%s&action=3&'%movie_id)]
+                        PostbackTemplateAction(label='北區', data='movie=%s&action=3&area=1&'%movie_id),
+                        PostbackTemplateAction(label='竹苗', data='movie=%s&action=3&area=2&'%movie_id),
+                        PostbackTemplateAction(label='中區', data='movie=%s&action=3&area=3&'%movie_id),
+                        PostbackTemplateAction(label='南區', data='movie=%s&action=3&area=4&'%movie_id)]
                     )
                 message = TemplateSendMessage(
                     type = 'template', alt_text=movie_name+"影城據點",
                     template=buttons_template
                     )
-                line_bot_api.reply_message(event.reply_token,message)
+                '''
+                message = get_theater_carousel(movie_id, theaters, movie_name)
+                line_bot_api.reply_message(event.reply_token, message)
     elif action_type == '2':
         confirm_type = re.search('&confirm=(.+?)&',event.postback.data).group(1)
         if confirm_type == '1':
@@ -414,15 +428,25 @@ def handle_message(event):
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='可以用關鍵字來找其他的電影呦～'))
     elif action_type == '3':
-        # display movie info from hot movie List
-        line_bot_api.reply_message(event.reply_token, get_movie_template(movie_id))
+        # display theaters by area
+        area = re.search('&area=(.+?)&',event.postback.data).group(1)
+        if area == '1': # 北區
+
+            pass
+        elif area == '2':
+            pass
+        elif area == '3':
+            pass
+        else:
     elif action_type =='4':
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
         time_slot = re.search('&slot=(.+?)&',event.postback.data).group(1)
         message = get_movie_times_message(movie_id, movie_theater, movie_date, time_slot)
         line_bot_api.reply_message(event.reply_token, message)
-
+    elif action_type == '5':
+        # display movie info from hot movie List
+        line_bot_api.reply_message(event.reply_token, get_movie_template(movie_id))
 crawl_index_movie()
 crawl_theater_info()
 crawl_hot_movie()
