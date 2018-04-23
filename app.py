@@ -291,7 +291,7 @@ def get_theater_carousel(movie_id, theaters, area):
             theater_img_add = theater_info[area][theaters[t]]
         col.append(CarouselColumn(
             title=theaters[t], text=theater_img_add[1],
-            thumbnail_image_url=theater_img_add[0]
+            thumbnail_image_url=theater_img_add[0],
             actions=[
                 PostbackTemplateAction(
                     label='Learn more',
