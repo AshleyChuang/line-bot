@@ -209,23 +209,12 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
     date = date_times[0]
     times = date_times[1]
     if len(times) <= 10:
-        actions_arr = []
-        if len(times) <= 3:
-            print("場次<=3")
-            for t in times:
-                actions_arr.append(URITemplateAction(type = 'uri',label='hi', uri='https://www.google.com.tw/#gws_rd=ssl'))
-        else:
-            print("場次>3, <=10")
-            actions_arr.append(URITemplateAction(type = 'uri',label=times[0][0]+"->Booking", uri=times[0][1]))
-            actions_arr.append(URITemplateAction(type = 'uri',label=times[1][0]+"->Booking", uri=times[1][1]))
-            actions_arr.append(PostbackTemplateAction(
-                type='postback',label='Get More Show Times',
-                data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
-            ))
-        print("length of actions_arr:",len(actions_arr))
         col = CarouselColumn(
                 title=date, text=description[0:60],
-                actions=actions_arr)
+                actions=[PostbackTemplateAction(
+                    type='postback',label='Get Show Times and Book',
+                    data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
+                )])
         return col
     else:
         print("分早上下午晚上")
