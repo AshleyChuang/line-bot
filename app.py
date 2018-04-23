@@ -258,6 +258,7 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
     return col
 
 def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
+    print("!!!", len(movie_dict[movie_id][3]))
     if len(movie_dict[movie_id][3]) == 0:
         crawl_theater(movie_id)
     if len(movie_dict[movie_id][2]) == 0:
@@ -313,15 +314,6 @@ def get_theater_carousel(movie_id, theaters, movie_name):
     text_message = ['《',movie_name,'》目前有在以下的威秀影城播出喔！選擇您想要的影城吧～\n']
     col = []
     for t in theaters:
-        '''
-        if area == -1:
-            for i in range(0,len(theater_info)):
-                if theaters[t] in theater_info[i]:
-                    theater_img_add = theater_info[i][theaters[t]]
-                    break
-        else:
-            theater_img_add = theater_info[area][theaters[t]]
-        '''
         for i in range(0,len(theater_info)):
             if theaters[t] in theater_info[i]:
                 theater_img_add = theater_info[i][theaters[t]]
@@ -381,28 +373,8 @@ def handle_message(event):
             )
             line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=text),message])
         else:
-            if len(theaters) <=10:
-                message = get_theater_carousel(movie_id, theaters, movie_name)
-                line_bot_api.reply_message(event.reply_token, message)
-            else:
-                '''
-                buttons_template = ButtonsTemplate(
-                    type='buttons', title=movie_name"威秀影城據點",
-                    text='請選擇影城區域',
-                    thumbnail_image_url = next(iter(theater_info[0].values()))[0],
-                    actions=[
-                        PostbackTemplateAction(label='北區', data='movie=%s&action=3&area=1&'%movie_id),
-                        PostbackTemplateAction(label='竹苗', data='movie=%s&action=3&area=2&'%movie_id),
-                        PostbackTemplateAction(label='中區', data='movie=%s&action=3&area=3&'%movie_id),
-                        PostbackTemplateAction(label='南區', data='movie=%s&action=3&area=4&'%movie_id)]
-                    )
-                message = TemplateSendMessage(
-                    type = 'template', alt_text=movie_name+"影城據點",
-                    template=buttons_template
-                    )
-                '''
-                message = get_theater_carousel(movie_id, theaters, movie_name)
-                line_bot_api.reply_message(event.reply_token, message)
+            message = get_theater_carousel(movie_id, theaters, movie_name)
+            line_bot_api.reply_message(event.reply_token, message)
     elif action_type == '2':
         confirm_type = re.search('&confirm=(.+?)&',event.postback.data).group(1)
         if confirm_type == '1':
@@ -428,9 +400,6 @@ def handle_message(event):
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='可以用關鍵字來找其他的電影呦～'))
     elif action_type == '3':
-        # display theaters by area
-        area = re.search('&area=(.+?)&',event.postback.data).group(1)
-        
     elif action_type =='4':
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
