@@ -208,50 +208,24 @@ def handle_message(event):
 def generate_carousel_col(date_times,description, movie_id, movie_theater):
     date = date_times[0]
     times = date_times[1]
-    print("date:", len(date))
-    return CarouselColumn(title="test",text='description[0:60]',actions=[PostbackTemplateAction(
-        type='postback',label='Get Show Times',
-        data='movie=a&action=4&theater=b&date=a&slot=0'
-    )])
-    if len(times) <= 10:
-        print("hey")
-        col = CarouselColumn(title=date, text=description[0:60],
-                actions=[
-                    PostbackTemplateAction(
-                        type='postback',label='Get Show Times and Book',
-                        data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
-                    ),
-                    PostbackTemplateAction(
-                        type='postback',label='Get Show Times and Book',
-                        data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
-                    ),
-                    PostbackTemplateAction(
-                        type='postback',label='Get Show Times and Book',
-                        data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
-                    )
-                ]
-            )
-        return col
-    else:
-        print("分早上下午晚上")
-        col = CarouselColumn(
-                title=date,text=description[0:60],
-                actions=[
-                    PostbackTemplateAction(
-                        type='postback',label='Morning Session',
-                        data='movie=%s&action=4&theater=%s&date=%s&slot=1&' %(movie_id, movie_theater, date)
-                    ),
-                    PostbackTemplateAction(
-                        type='postback',label='Afternoon Session',
-                        data='movie=%s&action=4&theater=%s&date=%s&slot=2&' %(movie_id, movie_theater, date)
-                    ),
-                    PostbackTemplateAction(
-                        type='postback',label='Evening Session',
-                        data='movie=%s&action=4&theater=%s&date=%s&slot=3&' %(movie_id, movie_theater, date)
-                    )
-                ]
-            )
-        return col
+    col = CarouselColumn(
+            title=date,text=description[0:60],
+            actions=[
+                PostbackTemplateAction(
+                    type='postback',label='Morning Session',
+                    data='movie=%s&action=4&theater=%s&date=%s&slot=1&' %(movie_id, movie_theater, date)
+                ),
+                PostbackTemplateAction(
+                    type='postback',label='Afternoon Session',
+                    data='movie=%s&action=4&theater=%s&date=%s&slot=2&' %(movie_id, movie_theater, date)
+                ),
+                PostbackTemplateAction(
+                    type='postback',label='Evening Session',
+                    data='movie=%s&action=4&theater=%s&date=%s&slot=3&' %(movie_id, movie_theater, date)
+                )
+            ]
+        )
+    return col
 
 def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_time):
     date_times = movie_dict[movie_id][3][movie_theater]
@@ -282,8 +256,11 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
                         ]
                     ))
             break
-    carousel_template =CarouselTemplate(type='carousel', columns=col)
-    message = TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
+    if len(col) == 0:
+        messate = TextSendMessage(text="目前這個時段沒有任何場次耶！試試看別的時段吧～")
+    else:
+        carousel_template =CarouselTemplate(type='carousel', columns=col)
+        message = TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
     return message
 
 def get_theater_carousel(movie_id, theaters, area):
