@@ -225,6 +225,7 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
                 actions=actions_arr)
         return col
     else:
+        print("分早上下午晚上")
         col = CarouselColumn(
                 title=date,text=description[0:60],
                 actions=[
@@ -373,7 +374,7 @@ def handle_message(event):
                 movie_days_col = []
                 description = ''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]])
                 for date_times in movie_days:
-                    col = generate_carousel_col(date_times, description[0:60], movie_id, movie_theater)
+                    col = generate_carousel_col(date_times, description, movie_id, movie_theater)
                     movie_days_col.append(col)
                 carousel_template = CarouselTemplate(tyep='carousel', columns=movie_days_col)
                 carousel_template_message = TemplateSendMessage(type = 'template',alt_text='Select Moive Dates',template=carousel_template)
