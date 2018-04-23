@@ -257,11 +257,10 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, from_time, to_t
                     ))
             break
     if len(col) == 0:
-        messate = TextSendMessage(text="目前這個時段沒有任何場次耶！試試看別的時段吧～")
+        return TextSendMessage(text="目前這個時段沒有任何場次耶！試試看別的時段吧～")
     else:
         carousel_template =CarouselTemplate(type='carousel', columns=col)
-        message = TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
-    return message
+        return TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
 
 def get_theater_carousel(movie_id, theaters, area):
     col = []
