@@ -268,13 +268,13 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
             break
     if len(col) == 0:
         sesssion = ''
-        if time_slot == 1:
+        if time_slot == '1':
             session = '上午'
-        elif time_slot == 2:
+        elif time_slot == '2':
             session = '下午'
         else:
             session = '晚間'
-        return TextSendMessage(text="%s在%s %s目前在%s時段沒有任何場次耶！試試看別的時段吧～" % (description, movie_date, movie_time, session))
+        return TextSendMessage(text="%s：目前在%s的%s時段沒有任何場次耶！試試看別的時段吧～" % (description, movie_date, session))
     else:
         carousel_template =CarouselTemplate(type='carousel', columns=col)
         return TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
