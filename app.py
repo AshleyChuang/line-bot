@@ -380,6 +380,8 @@ def handle_message(event):
                 TextSendMessage(text='可以用關鍵字來找其他的電影呦～')])
             else:
                 movie_days_col = []
+                if len(movie_dict[movie_id][2]) == 0:
+                    crawl_theater(movie_id)
                 description = ''.join(['《',movie_name, '》@', movie_dict[movie_id][2][movie_theater]])
                 for date_times in movie_days:
                     col = generate_carousel_col(date_times, description, movie_id, movie_theater)
