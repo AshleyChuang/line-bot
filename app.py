@@ -281,7 +281,7 @@ def get_theater_carousel(movie_id, theaters, area):
     col = []
     for t in theaters:
         col.append(CarouselColumn(
-            title=theaters[t], text='address',
+            title=theaters[t], text=next(iter(theater_info[theaters[t]].values()))[0],
             actions=[
                 PostbackTemplateAction(
                     label='Learn more',
