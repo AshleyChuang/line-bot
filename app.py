@@ -289,10 +289,10 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                 ))
             break
     col_array = [col[i:i+10] for i  in range(0, len(col), 10)]
-    carousel_template = []
+    message = []
     for c in col_array:
-        carousel_template.append(CarouselTemplate(columns=c))
-    return TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template[0:5])
+        message.append(TemplateSendMessage(type='template', alt_text='Show Times', template=CarouselTemplate(columns=c)))
+    return message
 
 def get_theater_carousel(movie_id, theaters, movie_name):
     text_message = ['《',movie_name,'》目前有在以下的威秀影城播出喔！選擇您想要的影城吧～\n']
