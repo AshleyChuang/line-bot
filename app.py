@@ -145,10 +145,10 @@ def crawl_movie_info(movie_id):
     soup = BeautifulSoup(content, 'html.parser')
     infoArea = soup.find(class_='infoArea')
     if infoArea is None:
-        return TextSendMessage(text='本電影沒有包含電影資訊')
+        return TextSendMessage(text='抱歉！本電影沒有包含電影資訊')
     table = infoArea.find('table')
     if table is None:
-        return TextSendMessage(text='本電影沒有包含電影資訊')
+        return TextSendMessage(text='抱歉！本電影沒有包含電影資訊')
     infos = table.find_all('tr')
     info=[]
     for i in infos:
