@@ -257,20 +257,18 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
                     type='postback',label='Get Show Times',
                     data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
                 )
-                '''
-                PostbackTemplateAction(
-                    type='postback',label='Morning Session',
-                    data='movie=%s&action=4&theater=%s&date=%s&slot=1&' %(movie_id, movie_theater, date)
-                ),
-                PostbackTemplateAction(
-                    type='postback',label='Afternoon Session',
-                    data='movie=%s&action=4&theater=%s&date=%s&slot=2&' %(movie_id, movie_theater, date)
-                ),
-                PostbackTemplateAction(
-                    type='postback',label='Evening Session',
-                    data='movie=%s&action=4&theater=%s&date=%s&slot=3&' %(movie_id, movie_theater, date)
-                )
-                '''
+                #PostbackTemplateAction(
+                #    type='postback',label='Morning Session',
+                #    data='movie=%s&action=4&theater=%s&date=%s&slot=1&' %(movie_id, movie_theater, date)
+                #),
+                #PostbackTemplateAction(
+                #    type='postback',label='Afternoon Session',
+                #    data='movie=%s&action=4&theater=%s&date=%s&slot=2&' %(movie_id, movie_theater, date)
+                #),
+                #PostbackTemplateAction(
+                #    type='postback',label='Evening Session',
+                #    data='movie=%s&action=4&theater=%s&date=%s&slot=3&' %(movie_id, movie_theater, date)
+                #)
             ]
         )
     return col
