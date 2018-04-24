@@ -419,12 +419,9 @@ def job():
     if len(usersId) !=0:
         line_bot_api.multicast(usersId, TextSendMessage(text='Hello World!'))
 schedule.every(5).seconds.do(job)
-#schedule.every().second(5).do(job)
-#schedule.every().day.at("10:30").do(job)
-#schedule.every(5).to(10).days.do(job)
-#schedule.every().monday.do(job)
-#schedule.every().wednesday.at("13:15").do(job)
-
+while True:
+    schedule.run_pending()
+    time.sleep(1)
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
