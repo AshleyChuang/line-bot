@@ -147,7 +147,8 @@ def crawl_movie_info(movie_id):
     info=[]
     for i in infos:
         info.append(''.join(i.find_all(text = True)))
-    return TextSendMessage(text=''.join(info))
+    info_text = ''.join(info)
+    return TextSendMessage(text=info_text[0:2000])
 
 def crawl_movie_story(movie_id):
     url = detail_url_by_id + movie_id
@@ -346,7 +347,7 @@ def get_theater_carousel(movie_id, theaters, movie_name):
             thumbnail_image_url=theater_img_add[0],
             actions=[
                 PostbackTemplateAction(
-                    label='Get Show Times',
+                    label='See Movie Here',
                     data='movie=%s&action=2&confirm=1&theater=%s&'%(movie_id, t)
                 )
             ]
