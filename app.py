@@ -314,7 +314,8 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                 return TextSendMessage(text='哎呀! 目前所有在%s %s的場次 都賣光了耶!' % (theater_name,movie_date))
             for session in time_sessions:
                 movie_time = session[0]
-                print(session[1])
+                if session[1].startswith('#'):
+                    continue
                 hour = int(movie_time.split(':')[0])
                 in_session = 1
                 if time_slot == '1': # morning session
