@@ -213,9 +213,9 @@ def get_hot_movie_list():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print(event.source.userId)
-    #if event.source.userId not in usersId:
-    #    usersId.append(event.source.userId)
+    print(event.source.user_id)
+    if event.source.user_id not in usersId:
+        usersId.append(event.source.user_id)
     if '推薦' in event.message.text or '好看' in event.message.text or '熱門' in event.message.text or 'recommend' in event.message.text:
         message = get_hot_movie_list();
         line_bot_api.reply_message(event.reply_token, message)
