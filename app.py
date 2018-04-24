@@ -253,23 +253,10 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
     col = CarouselColumn(
             title=date,text=description[0:60],
             actions=[
-                ###
                 PostbackTemplateAction(
                     type='postback',label='Get Show Times',
                     data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
                 )
-                #PostbackTemplateAction(
-                #    type='postback',label='Morning Session',
-                #    data='movie=%s&action=4&theater=%s&date=%s&slot=1&' %(movie_id, movie_theater, date)
-                #),
-                #PostbackTemplateAction(
-                #    type='postback',label='Afternoon Session',
-                #    data='movie=%s&action=4&theater=%s&date=%s&slot=2&' %(movie_id, movie_theater, date)
-                #),
-                #PostbackTemplateAction(
-                #    type='postback',label='Evening Session',
-                #    data='movie=%s&action=4&theater=%s&date=%s&slot=3&' %(movie_id, movie_theater, date)
-                #)
             ]
         )
     return col
@@ -290,31 +277,6 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                 return TextSendMessage(text='哎呀! 目前所有在%s %s的場次 都賣光了耶!' % (theater_name,movie_date))
             for session in time_sessions:
                 movie_time = session[0]
-                hour = int(movie_time.split(':')[0])
-                in_session = 1
-                '''
-                if time_slot == '1': # morning session
-                    if hour >= 8 and hour < 12:
-                        in_session = 1
-                elif time_slot =='2': # afternoon session
-                    if hour >= 12 and hour < 18:
-                        in_session = 1
-                elif time_slot == '3': # evening session
-                    if hour >= 18 or hour <8:
-                        in_session = 1
-
-                if in_session == 1:
-                    col.append(CarouselColumn(
-                        title=movie_date+' '+movie_time, text=description[0:60],
-                        actions=[
-                            URITemplateAction(
-                                type='uri',
-                                label='Booking',
-                                uri=session[1]
-                            )
-                        ]
-                    ))
-                '''
                 col.append(CarouselColumn(
                     title=movie_date+' '+movie_time, text=description[0:60],
                     actions=[
@@ -326,19 +288,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                     ]
                 ))
             break
-    '''
-    if len(col) == 0:
-        sesssion = ''
-        if time_slot == '1':
-            session = '上午'
-        elif time_slot == '2':
-            session = '下午'
-        else:
-            session = '晚間'
-        return TextSendMessage(text="%s：目前在%s的%s時段沒有任何場次耶！試試看別的時段吧～" % (description, movie_date, session))
-    '''
     if len(col) > 10:
-        #####
         carousel_template =CarouselTemplate(type='carousel', columns=col[0:10])
         carousel_template2 =CarouselTemplate(type='carousel', columns=col[10:])
         return TemplateSendMessage(type='template', alt_text='Show Times', template=[carousel_template, carousel_template2])
@@ -442,8 +392,8 @@ def handle_message(event):
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
         time_slot = re.search('&slot=(.+?)&',event.postback.data).group(1)
-        #message = get_movie_times_message(movie_id, movie_theater, movie_date, time_slot)
-        message = TextSendMessage(text='test')
+        message = get_movie_times_message(movie_id, movie_theater, movie_date, time_slot)
+        #message = TextSendMessage(text='test')
         line_bot_api.reply_message(event.reply_token, message)
     elif action_type == '5':
         # display movie info from hot movie List
