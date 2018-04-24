@@ -138,15 +138,26 @@ def crawl_theater_info():
             address = t.find('p').text
             theaters_in_area[name] = [img, address]
         theater_info.append(theaters_in_area)
-
 def crawl_movie_info(movie_id):
     url = detail_url_by_id + movie_id
     r = requests.get(url)
     content = r.text
     soup = BeautifulSoup(content, 'html.parser')
-    info = soup.find(class_='infoArea').find('table').find_all(text = True)
-    print("info:",len(''.join(info)))
+    infos = soup.find(class_='infoArea').find('table').find_all('tr')
+    info=[]
+    for i in infos:
+        info.append(''.join(i.find_all(text = True)))
     return TextSendMessage(text=''.join(info))
+
+def crawl_movie_story(movie_id):
+    url = detail_url_by_id + movie_id
+    r = requests.get(url)
+    content = r.text
+    soup = BeautifulSoup(content, 'html.parser')
+    story = soup.find(class_='bbsArticle').find('p').find_all(text = True)
+    story_text = ''.join(story)
+    return TextSendMessage(text=story_text[0:2000])
+
 ############
 app = Flask(__name__)
 
@@ -192,7 +203,11 @@ def get_movie_template(movie_id):
         type='buttons', title=movie_name[0:40],
         text='Check out more information for the movie!',
         thumbnail_image_url = movie_pic,
-        actions=[PostbackTemplateAction(label='Movie Info', data='movie=%s&action=3&'%movie_id),PostbackTemplateAction(label='Show Times', data='movie=%s&action=1&'%movie_id),uri_template]
+        actions=[
+        PostbackTemplateAction(label='Movie Info', data='movie=%s&action=3&'%movie_id),
+        PostbackTemplateAction(label='Movie Story', data='movie=%s&action=6&'%movie_id),
+        PostbackTemplateAction(label='Show Times', data='movie=%s&action=1&'%movie_id),
+        uri_template]
         )
     message = TemplateSendMessage(
         type = 'template', alt_text=movie_name,
@@ -406,6 +421,9 @@ def handle_message(event):
     elif action_type == '5':
         # display movie info from hot movie List
         line_bot_api.reply_message(event.reply_token, get_movie_template(movie_id))
+    elif action_type == '6':
+        message = crawl_movie_story(movie_id)
+        line_bot_api.reply_message(event.reply_token, message)
 crawl_index_movie()
 crawl_theater_info()
 crawl_hot_movie()
