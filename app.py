@@ -405,11 +405,11 @@ crawl_hot_movie()
 sched = BlockingScheduler()
 i=0
 @sched.scheduled_job('interval', seconds=5)
-def my_job:
+def my_job():
     print("hi")
+    print(i)
+    i += 1
     if len(usersId) !=0:
-        print(i)
-        i += 1
         line_bot_api.multicast(['U84434259e4dcdd16ea11fd37a358b6e7'], TextSendMessage(text='Hello World!'))
 
 #sched.add_job(my_job, 'interval', seconds=5)
