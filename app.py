@@ -107,22 +107,6 @@ def crawl_movie_time(movie_id, movie_theater):
         #dates.append(date)
         date = day.find("h4").text
         date = date.replace('年', '/').replace('月', '/').replace('日', '/',1)
-        '''
-        if '一' in date:
-            date = date.replace('/ 星期一', '(Mon)')
-        elif '二' in date:
-            date = date.replace('/ 星期二', '(Tue)')
-        elif '三' in date:
-            date = date.replace('/ 星期三', '(Wed)')
-        elif '四' in date:
-            date = date.replace('/ 星期四', '(Thu)')
-        elif '五' in date:
-            date = date.replace('/ 星期五', '(Fri)')
-        elif '六' in date:
-            date = date.replace('/ 星期六', '(Sat)')
-        elif '日' in date:
-            date = date.replace('/ 星期日', '(Sun)')
-        '''
         date2times.append(date)
         dates.append(date)
         sessions = day.find("ul", {"class": "bookList"}).find_all("li")
@@ -158,10 +142,11 @@ def crawl_theater_info():
 app = Flask(__name__)
 
 # Channel Access Token
-line_bot_api = LineBotApi('bQu1j0/rJMgNGK++uQcD1Pu8zLcB/Gdp3kwwcwrP4Quj33AGyX1wZtTjPmy8TaNTiEgTgbgzGvN7ZMNtBnDPSubZ0waBtV1tLnbRM7x7O0gkO/z165gjVEJ7YvxoBEMLyzjobckPsfnw5Ncb6hH1fQdB04t89/1O/w1cDnyilFU=')
+#line_bot_api = LineBotApi('bQu1j0/rJMgNGK++uQcD1Pu8zLcB/Gdp3kwwcwrP4Quj33AGyX1wZtTjPmy8TaNTiEgTgbgzGvN7ZMNtBnDPSubZ0waBtV1tLnbRM7x7O0gkO/z165gjVEJ7YvxoBEMLyzjobckPsfnw5Ncb6hH1fQdB04t89/1O/w1cDnyilFU=')
+line_bot_api = LineBotApi('3PwcnfFcEGxN+3dTN2DK00jD+S8e1mbWUfx1keTlKR6SqtGHcRCJ3LivfjRv5V3e+tsGpvgIH9wgrI+2xO28z6SzZ7mXIaZH3RdjU3u/AC0yjO+XwqijKkzUx7z/1c002HjE1Xgdjaut4/jBfJPYUgdB04t89/1O/w1cDnyilFU=')
 # Channel Secret
-handler = WebhookHandler('756c8ca2e53d032ae70d8e1cb6624294')
-
+#handler = WebhookHandler('756c8ca2e53d032ae70d8e1cb6624294')
+handler = WebhookHandler('9daedb1daca8cbb8b176500902f314a2')
 # push every day
 '''
 try:
