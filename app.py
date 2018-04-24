@@ -260,7 +260,7 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
             ]
         )
     return col
-
+'''
 def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
     if len(movie_dict[movie_id][2]) == 0:
         crawl_theater(movie_id)
@@ -296,10 +296,66 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
     message = []
     for c in col_array:
         message.append(TemplateSendMessage(type='template', alt_text='Show Times', template=CarouselTemplate(columns=c)))
-    if len(message) == 1:
-        return message[0]
+    return message
+'''
+def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
+    if len(movie_dict[movie_id][2]) == 0:
+        crawl_theater(movie_id)
+    if len(movie_dict[movie_id][3]) == 0:
+        crawl_movie_time(movie_id, movie_theater)
+    date_times = movie_dict[movie_id][3][movie_theater]
+    theater_name = movie_dict[movie_id][2][movie_theater]
+    col = []
+    description = ''.join(['《',movie_dict[movie_id][0], '》@', theater_name])
+    for date in date_times:
+        if date[0] == movie_date:
+            time_sessions = date[1] # it's an array of show times for the movie in designated theater
+            if len(time_sessions) == 0:
+                return TextSendMessage(text='哎呀! 目前所有在%s %s的場次 都賣光了耶!' % (theater_name,movie_date))
+            for session in time_sessions:
+                movie_time = session[0]
+                hour = int(movie_time.split(':')[0])
+                in_session = 1
+                if time_slot == '1': # morning session
+                    if hour >= 8 and hour < 12:
+                        in_session = 1
+                elif time_slot =='2': # afternoon session
+                    if hour >= 12 and hour < 18:
+                        in_session = 1
+                elif time_slot == '3': # evening session
+                    if hour >= 18 or hour <8:
+                        in_session = 1
+                if in_session == 1:
+                    col.append(CarouselColumn(
+                        title=movie_date+' '+movie_time, text=description[0:60],
+                        actions=[
+                            URITemplateAction(
+                                type='uri',
+                                label='Booking',
+                                uri=session[1]
+                            )
+                        ]
+                    ))
+            break
+
+    if len(col) == 0:
+        sesssion = ''
+        if time_slot == '1':
+            session = '上午'
+        elif time_slot == '2':
+            session = '下午'
+        else:
+            session = '晚間'
+        return TextSendMessage(text="%s：目前在%s的%s時段沒有任何場次耶！試試看別的時段吧～" % (description, movie_date, session))
+
+    if len(col) > 10:
+        #####
+        carousel_template =CarouselTemplate(type='carousel', columns=col[0:10])
+        carousel_template2 =CarouselTemplate(type='carousel', columns=col[10:])
+        return TemplateSendMessage(type='template', alt_text='Show Times', template=[carousel_template, carousel_template2])
     else:
-        return message
+        carousel_template =CarouselTemplate(type='carousel', columns=col)
+        return TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
 
 def get_theater_carousel(movie_id, theaters, movie_name):
     text_message = ['《',movie_name,'》目前有在以下的威秀影城播出喔！選擇您想要的影城吧～\n']
