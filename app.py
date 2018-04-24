@@ -260,7 +260,7 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
             ]
         )
     return col
-'''
+
 def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
     if len(movie_dict[movie_id][2]) == 0:
         crawl_theater(movie_id)
@@ -277,6 +277,8 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                 return TextSendMessage(text='哎呀! 目前所有在%s %s的場次 都賣光了耶!' % (theater_name,movie_date))
             for session in time_sessions:
                 movie_time = session[0]
+                if session[1].startswith('#'):
+                    continue
                 col.append(CarouselColumn(
                     title=movie_date+' '+movie_time, text=description[0:60],
                     actions=[
@@ -297,6 +299,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
     for c in col_array:
         message.append(TemplateSendMessage(type='template', alt_text='Show Times', template=CarouselTemplate(columns=c)))
     return message
+
 '''
 def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
     if len(movie_dict[movie_id][2]) == 0:
@@ -357,7 +360,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
     else:
         carousel_template =CarouselTemplate(type='carousel', columns=col)
         return TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
-
+'''
 def get_theater_carousel(movie_id, theaters, movie_name):
     text_message = ['《',movie_name,'》目前有在以下的威秀影城播出喔！選擇您想要的影城吧～\n']
     col = []
