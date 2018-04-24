@@ -442,7 +442,8 @@ def handle_message(event):
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
         time_slot = re.search('&slot=(.+?)&',event.postback.data).group(1)
-        message = get_movie_times_message(movie_id, movie_theater, movie_date, time_slot)
+        #message = get_movie_times_message(movie_id, movie_theater, movie_date, time_slot)
+        message = TextSendMessage(text='test')
         line_bot_api.reply_message(event.reply_token, message)
     elif action_type == '5':
         # display movie info from hot movie List
