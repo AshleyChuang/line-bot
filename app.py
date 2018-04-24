@@ -252,6 +252,12 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
     col = CarouselColumn(
             title=date,text=description[0:60],
             actions=[
+                ###
+                PostbackTemplateAction(
+                    type='postback',label='Get Show Times',
+                    data='movie=%s&action=4&theater=%s&date=%s&slot=0&' %(movie_id, movie_theater, date)
+                )
+                '''
                 PostbackTemplateAction(
                     type='postback',label='Morning Session',
                     data='movie=%s&action=4&theater=%s&date=%s&slot=1&' %(movie_id, movie_theater, date)
@@ -264,6 +270,7 @@ def generate_carousel_col(date_times,description, movie_id, movie_theater):
                     type='postback',label='Evening Session',
                     data='movie=%s&action=4&theater=%s&date=%s&slot=3&' %(movie_id, movie_theater, date)
                 )
+                '''
             ]
         )
     return col
@@ -295,6 +302,9 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                 elif time_slot == '3': # evening session
                     if hour >= 18 or hour <8:
                         in_session = 1
+                ####
+                if time_slot == '0':
+                    in_sessin = 1
                 if in_session == 1:
                     col.append(CarouselColumn(
                         title=movie_date+' '+movie_time, text=description[0:60],
@@ -316,6 +326,11 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
         else:
             session = '晚間'
         return TextSendMessage(text="%s：目前在%s的%s時段沒有任何場次耶！試試看別的時段吧～" % (description, movie_date, session))
+    elif len(col) > 10:
+        #####
+        carousel_template =CarouselTemplate(type='carousel', columns=col[0:10])
+        carousel_template2 =CarouselTemplate(type='carousel', columns=col[10:])
+        return TemplateSendMessage(type='template', alt_text='Show Times', template=[carousel_template, carousel_template2])
     else:
         carousel_template =CarouselTemplate(type='carousel', columns=col)
         return TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
