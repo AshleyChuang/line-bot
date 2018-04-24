@@ -289,8 +289,8 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                 ))
             break
     if len(col) <= 10:
-        print("<=10!!!")
-        ca_temp = CarouselTemplate(columns=col)
+        print("<=10!!!", len(col))
+        ca_temp = CarouselTemplate(type='carousel',columns=col)
         return TemplateSendMessage(type='template', alt_text='Show Times', template=ca_temp)
     col_array = [col[i:i+10] for i  in range(0, len(col), 10)]
     message = []
