@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from datetime import datetime
-import schedule
+from apscheduler.schedulers.blocking import BlockingScheduler
 import time
 
 
@@ -400,21 +400,21 @@ crawl_index_movie()
 crawl_theater_info()
 crawl_hot_movie()
 
-def job():
-    print("I'm working...")
+sched = BlockingScheduler()
+
+@sched.scheduled_job('interval', seconds=5)
+def my_job():
+    print('hello world')
     line_bot_api.multicast(['U84434259e4dcdd16ea11fd37a358b6e7'], TextSendMessage(text='Hello World!'))
 
-schedule.every(1).minutes.do(job)
+#sched.add_job(my_job, 'interval', seconds=5)
+sched.start()
+
 #schedule.every().hour.do(job)
 #schedule.every().day.at("10:30").do(job)
 #schedule.every(5).to(10).days.do(job)
 #schedule.every().monday.do(job)
 #schedule.every().wednesday.at("13:15").do(job)
-
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
 
 import os
 if __name__ == "__main__":
