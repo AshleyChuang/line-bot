@@ -291,7 +291,8 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
             for session in time_sessions:
                 movie_time = session[0]
                 hour = int(movie_time.split(':')[0])
-                in_session = 0
+                in_session = 1
+                '''
                 if time_slot == '1': # morning session
                     if hour >= 8 and hour < 12:
                         in_session = 1
@@ -301,9 +302,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                 elif time_slot == '3': # evening session
                     if hour >= 18 or hour <8:
                         in_session = 1
-                ####
-                if time_slot == '0':
-                    in_session = 1
+
                 if in_session == 1:
                     col.append(CarouselColumn(
                         title=movie_date+' '+movie_time, text=description[0:60],
@@ -315,7 +314,19 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                             )
                         ]
                     ))
+                '''
+                col.append(CarouselColumn(
+                    title=movie_date+' '+movie_time, text=description[0:60],
+                    actions=[
+                        URITemplateAction(
+                            type='uri',
+                            label='Booking',
+                            uri=session[1]
+                        )
+                    ]
+                ))
             break
+    '''
     if len(col) == 0:
         sesssion = ''
         if time_slot == '1':
@@ -325,7 +336,8 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
         else:
             session = '晚間'
         return TextSendMessage(text="%s：目前在%s的%s時段沒有任何場次耶！試試看別的時段吧～" % (description, movie_date, session))
-    elif len(col) > 10:
+    '''
+    if len(col) > 10:
         #####
         carousel_template =CarouselTemplate(type='carousel', columns=col[0:10])
         carousel_template2 =CarouselTemplate(type='carousel', columns=col[10:])
