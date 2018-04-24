@@ -3,9 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from datetime import datetime
-from apscheduler.schedulers.blocking import BlockingScheduler
-import time
-import schedule
 
 vieshow_url = 'https://www.vscinemas.com.tw/'
 hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
@@ -219,6 +216,8 @@ def handle_message(event):
     if '推薦' in event.message.text or '好看' in event.message.text or '熱門' in event.message.text or 'recommend' in event.message.text:
         message = get_hot_movie_list(user_name);
         line_bot_api.reply_message(event.reply_token, message)
+    elif 'hi' in event.message.text or 'hello' in event.message.text or '你好' in event.message.text or '嗨' or '哈囉' in event.message.text:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='哈囉 %s! 可以輸入電影關鍵字來查詢電影喔！也可以請我幫你推薦電影喔～'%(user_name)))
     else:
         movie_id = search_movie_id(event.message.text)
         message = get_movie_template(movie_id)
@@ -413,7 +412,7 @@ def my_job():
 
 sched.add_job(my_job, 'interval', seconds=5)
 sched.start()
-'''
+
 def job():
     print('Hi')
     if len(usersId) !=0:
@@ -422,6 +421,7 @@ schedule.every(5).seconds.do(job)
 while True:
     schedule.run_pending()
     time.sleep(1)
+'''
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
