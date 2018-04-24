@@ -143,7 +143,7 @@ def crawl_movie_info(movie_id):
     r = requests.get(url)
     content = r.text
     soup = BeautifulSoup(content, 'html.parser')
-    infoArea = find(class_='infoArea')
+    infoArea = soup.find(class_='infoArea')
     if infoArea is None:
         return TextSendMessage(text='本電影沒有包含電影資訊')
     table = infoArea.find('table')
@@ -297,7 +297,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                 ))
             break
     if len(col) <= 10:
-        print("<=10!!!", len(col))
+        #print("<=10!!!", len(col))
         ca_temp = CarouselTemplate(type='carousel',columns=col)
         return TemplateSendMessage(type='template', alt_text='Show Times', template=ca_temp)
     col_array = [col[i:i+10] for i  in range(0, len(col), 10)]
