@@ -302,7 +302,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                         in_session = 1
                 ####
                 if time_slot == '0':
-                    in_sessin = 1
+                    in_session = 1
                 if in_session == 1:
                     col.append(CarouselColumn(
                         title=movie_date+' '+movie_time, text=description[0:60],
