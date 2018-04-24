@@ -14,6 +14,7 @@ movie_dict = {}
 # movie info by movie id: 0->movie name, 1->image, 2->{theater_id:theater_name}, 3->{theater_id: [ dates "[date, [tuple(time, url)] ]" ]}
 theater_info = [] # [{北區}, {竹苗}, {中區}, {南區}]
 hot_movie_list = []
+usersId = []
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -148,12 +149,12 @@ line_bot_api = LineBotApi('3PwcnfFcEGxN+3dTN2DK00jD+S8e1mbWUfx1keTlKR6SqtGHcRCJ3
 #handler = WebhookHandler('756c8ca2e53d032ae70d8e1cb6624294')
 handler = WebhookHandler('9daedb1daca8cbb8b176500902f314a2')
 # push every day
-'''
+
 try:
-    line_bot_api.push_message('U84434259e4dcdd16ea11fd37a358b6e7', TextSendMessage(text='Hello World!'))
+    line_bot_api.multicast(usersId, TextSendMessage(text='Hello World!'))
 except LineBotApiError as e:
     abort(400)
-'''
+
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
@@ -210,12 +211,11 @@ def get_hot_movie_list():
     message = TemplateSendMessage(type='template', alt_text='Hot Movie List', template=imagecarousel)
     return [TextSendMessage(text='這是本週熱門電影喔！可以參考看看～'),message]
 
-@handler.add(FollowEvent):
-def handle_follow(event):
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="Hello! "))
-
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    print(event.source.userId)
+    if event.source.userId not in usersId:
+        usersId.append(event.source.userId)
     if '推薦' in event.message.text or '好看' in event.message.text or '熱門' in event.message.text or 'recommend' in event.message.text:
         message = get_hot_movie_list();
         line_bot_api.reply_message(event.reply_token, message)
