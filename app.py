@@ -223,7 +223,7 @@ def handle_message(event):
     if '推薦' in event.message.text or '好看' in event.message.text or '熱門' in event.message.text or 'recommend' in event.message.text:
         message = get_hot_movie_list(user_name);
         line_bot_api.reply_message(event.reply_token, message)
-    elif 'hi' in event.message.text or 'hello' in event.message.text or '你好' in event.message.text or '嗨' or '哈囉' in event.message.text:
+    elif 'hi' in event.message.text or 'hello' in event.message.text or '你好' in event.message.text or '嗨' in event.message.text or '哈囉' in event.message.text:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='哈囉 %s! 可以輸入電影關鍵字來查詢電影喔！也可以請我幫你推薦電影喔～'%(user_name)))
     else:
         movie_id = search_movie_id(event.message.text)
