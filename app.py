@@ -292,7 +292,10 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
     message = []
     for c in col_array:
         message.append(TemplateSendMessage(type='template', alt_text='Show Times', template=CarouselTemplate(columns=c)))
-    return message
+    if len(message) == 1:
+        return message[0]
+    else:
+        return message
 
 def get_theater_carousel(movie_id, theaters, movie_name):
     text_message = ['《',movie_name,'》目前有在以下的威秀影城播出喔！選擇您想要的影城吧～\n']
