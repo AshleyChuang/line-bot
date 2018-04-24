@@ -195,7 +195,7 @@ def get_movie_template(movie_id):
         )
     return message
 
-def get_hot_movie_list():
+def get_hot_movie_list(user_name):
     col = []
     for movie_id in hot_movie_list:
         col.append(ImageCarouselColumn(
@@ -207,15 +207,17 @@ def get_hot_movie_list():
                     ))
     imagecarousel = ImageCarouselTemplate(type='image_carousel',columns=col)
     message = TemplateSendMessage(type='template', alt_text='Hot Movie List', template=imagecarousel)
-    return [TextSendMessage(text='這是本週熱門電影喔！可以參考看看～'),message]
+    return [TextSendMessage(text='哈囉 %s! 這是本週熱門電影喔！可以參考看看～'%(user_name)),message]
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print(event.source.user_id)
+    #print(event.source.user_id)
     if event.source.user_id not in usersId:
         usersId.append(event.source.user_id)
+    profile = line_bot_api.get_profile(event.source.user_id)
+    user_name = profile.display_name
     if '推薦' in event.message.text or '好看' in event.message.text or '熱門' in event.message.text or 'recommend' in event.message.text:
-        message = get_hot_movie_list();
+        message = get_hot_movie_list(user_name);
         line_bot_api.reply_message(event.reply_token, message)
     else:
         movie_id = search_movie_id(event.message.text)
@@ -401,11 +403,13 @@ crawl_theater_info()
 crawl_hot_movie()
 
 sched = BlockingScheduler()
-
+i=0
 @sched.scheduled_job('interval', seconds=5)
 def my_job():
-    print('hello world')
-    line_bot_api.multicast(['U84434259e4dcdd16ea11fd37a358b6e7'], TextSendMessage(text='Hello World!'))
+    if len(usersId) !=0:
+        print(i)
+        i += 1
+        line_bot_api.multicast(['U84434259e4dcdd16ea11fd37a358b6e7'], TextSendMessage(text='Hello World!'))
 
 #sched.add_job(my_job, 'interval', seconds=5)
 sched.start()
