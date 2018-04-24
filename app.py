@@ -213,7 +213,7 @@ def get_hot_movie_list():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print(event)
+    print(event.source.userId)
     #if event.source.userId not in usersId:
     #    usersId.append(event.source.userId)
     if '推薦' in event.message.text or '好看' in event.message.text or '熱門' in event.message.text or 'recommend' in event.message.text:
