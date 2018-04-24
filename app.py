@@ -5,7 +5,7 @@ import re
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 import time
-
+import schedule
 
 vieshow_url = 'https://www.vscinemas.com.tw/'
 hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
@@ -401,10 +401,9 @@ def handle_message(event):
 crawl_index_movie()
 crawl_theater_info()
 crawl_hot_movie()
-
+'''
 sched = BlockingScheduler()
 i=0
-@sched.scheduled_job('interval', seconds=5)
 def my_job():
     print("hi")
     print(i)
@@ -412,10 +411,15 @@ def my_job():
     if len(usersId) !=0:
         line_bot_api.multicast(['U84434259e4dcdd16ea11fd37a358b6e7'], TextSendMessage(text='Hello World!'))
 
-#sched.add_job(my_job, 'interval', seconds=5)
+sched.add_job(my_job, 'interval', seconds=5)
 sched.start()
-
-#schedule.every().hour.do(job)
+'''
+def job():
+    print('Hi')
+    if len(usersId) !=0:
+        line_bot_api.multicast(usersId, TextSendMessage(text='Hello World!'))
+schedule.every(5).seconds.do(job)
+#schedule.every().second(5).do(job)
 #schedule.every().day.at("10:30").do(job)
 #schedule.every(5).to(10).days.do(job)
 #schedule.every().monday.do(job)

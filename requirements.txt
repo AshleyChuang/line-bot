@@ -4,3 +4,4 @@ beautifulsoup4
 requests
 nltk
 APScheduler==3.0.0
+schedule
