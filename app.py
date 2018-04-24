@@ -139,6 +139,13 @@ def crawl_theater_info():
             theaters_in_area[name] = [img, address]
         theater_info.append(theaters_in_area)
 
+def crawl_movie_info(movie_id):
+    url = detail_url_by_id + movie_id
+    r = requests.get(url)
+    content = r.text
+    soup = BeautifulSoup(content, 'html.parser')
+    info = soup.find(class_='infoArea').find('table').find_all(text = True)
+    return TextSendMessage(text=info)
 ############
 app = Flask(__name__)
 
@@ -184,7 +191,7 @@ def get_movie_template(movie_id):
         type='buttons', title=movie_name[0:40],
         text='Check out more information for the movie!',
         thumbnail_image_url = movie_pic,
-        actions=[PostbackTemplateAction(label='Show Times', data='movie=%s&action=1&'%movie_id),uri_template]
+        actions=[PostbackTemplateAction(label='Movie Info', data='movie=%s&action=3&'%movie_id),PostbackTemplateAction(label='Show Times', data='movie=%s&action=1&'%movie_id),uri_template]
         )
     message = TemplateSendMessage(
         type = 'template', alt_text=movie_name,
@@ -387,7 +394,8 @@ def handle_message(event):
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='可以用關鍵字來找其他的電影呦～'))
     elif action_type == '3':
-        pass
+        message = crawl_movie_info(movie_id)
+        line_bot_api.reply_message(event.reply_token, message)
     elif action_type =='4':
         movie_theater = re.search('&theater=(.+?)&',event.postback.data).group(1)
         movie_date = re.search('&date=(.+?)&',event.postback.data).group(1)
