@@ -149,12 +149,9 @@ line_bot_api = LineBotApi('3PwcnfFcEGxN+3dTN2DK00jD+S8e1mbWUfx1keTlKR6SqtGHcRCJ3
 #handler = WebhookHandler('756c8ca2e53d032ae70d8e1cb6624294')
 handler = WebhookHandler('9daedb1daca8cbb8b176500902f314a2')
 # push every day
-'''
-try:
-    line_bot_api.multicast(usersId, TextSendMessage(text='Hello World!'))
-except LineBotApiError as e:
-    abort(400)
-'''
+line_bot_api.multicast(usersId, TextSendMessage(text='Hello World!'))
+
+
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
