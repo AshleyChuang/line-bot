@@ -145,8 +145,8 @@ def crawl_movie_info(movie_id):
     content = r.text
     soup = BeautifulSoup(content, 'html.parser')
     info = soup.find(class_='infoArea').find('table').find_all(text = True)
-    print("info:",info)
-    return TextSendMessage(text=info)
+    print("info:",len(''.join(info)))
+    return TextSendMessage(text=''.join(info))
 ############
 app = Flask(__name__)
 
