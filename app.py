@@ -288,7 +288,7 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                     ]
                 ))
             break
-    col_array = seq[i:i+10] for i  in range(0, len(col), 10)]
+    col_array = [seq[i:i+10] for i  in range(0, len(col), 10)]
     for c in col_array:
         carousel_template.append(c)
     return TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
