@@ -3,6 +3,9 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from datetime import datetime
+import schedule
+import time
+
 
 vieshow_url = 'https://www.vscinemas.com.tw/'
 hot_url = 'https://www.vscinemas.com.tw/film/hot.aspx'
@@ -150,8 +153,6 @@ line_bot_api = LineBotApi('3PwcnfFcEGxN+3dTN2DK00jD+S8e1mbWUfx1keTlKR6SqtGHcRCJ3
 handler = WebhookHandler('9daedb1daca8cbb8b176500902f314a2')
 # push every day
 #line_bot_api.multicast(usersId, TextSendMessage(text='Hello World!'))
-
-line_bot_api.multicast(['U84434259e4dcdd16ea11fd37a358b6e7'], TextSendMessage(text='Hello World!'))
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
@@ -398,6 +399,23 @@ def handle_message(event):
 crawl_index_movie()
 crawl_theater_info()
 crawl_hot_movie()
+
+def job():
+    print("I'm working...")
+    line_bot_api.multicast(['U84434259e4dcdd16ea11fd37a358b6e7'], TextSendMessage(text='Hello World!'))
+
+schedule.every(1).minutes.do(job)
+#schedule.every().hour.do(job)
+#schedule.every().day.at("10:30").do(job)
+#schedule.every(5).to(10).days.do(job)
+#schedule.every().monday.do(job)
+#schedule.every().wednesday.at("13:15").do(job)
+
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
