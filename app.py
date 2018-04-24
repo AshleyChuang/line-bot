@@ -22,7 +22,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, PostbackEvent, TextMessage, TextSendMessage,TemplateSendMessage, ButtonsTemplate,
+    FollowEvent,MessageEvent, PostbackEvent, TextMessage, TextSendMessage,TemplateSendMessage, ButtonsTemplate,
     PostbackTemplateAction, MessageTemplateAction,
     URITemplateAction, DatetimePickerTemplateAction,
     ConfirmTemplate, CarouselTemplate, CarouselColumn,
@@ -210,6 +210,10 @@ def get_hot_movie_list():
     message = TemplateSendMessage(type='template', alt_text='Hot Movie List', template=imagecarousel)
     return [TextSendMessage(text='這是本週熱門電影喔！可以參考看看～'),message]
 
+@handler.add(FollowEvent):
+def greetin(event):
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="Hello! "+event.source.userId))
+    
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     if '推薦' in event.message.text or '好看' in event.message.text or '熱門' in event.message.text or 'recommend' in event.message.text:
