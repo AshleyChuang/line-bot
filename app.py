@@ -405,7 +405,8 @@ crawl_hot_movie()
 sched = BlockingScheduler()
 i=0
 @sched.scheduled_job('interval', seconds=5)
-def my_job():
+def my_job:
+    print("hi")
     if len(usersId) !=0:
         print(i)
         i += 1
