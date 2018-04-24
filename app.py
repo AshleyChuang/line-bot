@@ -288,13 +288,10 @@ def get_movie_times_message(movie_id, movie_theater, movie_date, time_slot):
                     ]
                 ))
             break
-    if len(col) > 10:
-        carousel_template =CarouselTemplate(type='carousel', columns=col[0:10])
-        carousel_template2 =CarouselTemplate(type='carousel', columns=col[10:])
-        return TemplateSendMessage(type='template', alt_text='Show Times', template=[carousel_template, carousel_template2])
-    else:
-        carousel_template =CarouselTemplate(type='carousel', columns=col)
-        return TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
+    col_array = seq[i:i+10] for i  in range(0, len(col), 10)]
+    for c in col_array:
+        carousel_template.append(c)
+    return TemplateSendMessage(type='template', alt_text='Show Times', template=carousel_template)
 
 def get_theater_carousel(movie_id, theaters, movie_name):
     text_message = ['《',movie_name,'》目前有在以下的威秀影城播出喔！選擇您想要的影城吧～\n']
